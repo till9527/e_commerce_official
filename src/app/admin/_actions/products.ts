@@ -7,6 +7,7 @@ import { notFound, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import path from 'path';
 
+
 const fileSchema = z.instanceof(File, { message: "Required" })
 const imageSchema = fileSchema.refine(
   file => file.size === 0 || file.type.startsWith("image/")
@@ -28,19 +29,24 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
   const data = result.data;
 
-  // Use static/images directory for file operations
-  const staticImagesDir = path.join( 'public', 'static', 'images');
-  await fs.mkdir(staticImagesDir, { recursive: true });
+  // Use /tmp directory for file operations
+  const tmpProductsDir = path.join('/tmp', 'products');
+  await fs.mkdir(tmpProductsDir, { recursive: true });
 
   // Handle file upload
-  const fileName = `${crypto.randomUUID()}-${data.file.name}`;
-  const filePath = path.join(staticImagesDir, fileName);
+  const fileName = ${crypto.randomUUID()}-${data.file.name};
+  const filePath = path.join(tmpProductsDir, fileName);
   await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
 
   // Handle image upload
-  const imageName = `${crypto.randomUUID()}-${data.image.name}`;
-  const imagePath = path.join(staticImagesDir, imageName);
+  const imageName = ${crypto.randomUUID()}-${data.image.name};
+  const imagePath = path.join(tmpProductsDir, imageName);
   await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
+
+  // Optionally, upload files to a cloud storage and get URLs
+  // For example, upload to AWS S3 and get public URLs
+  // const fileUrl = await uploadToS3(filePath);
+  // const imageUrl = await uploadToS3(imagePath);
 
   // Create product record in the database
   await db.product.create({
@@ -49,8 +55,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
       name: data.name,
       description: data.description,
       priceInCents: data.priceInCents,
-      filePath: `/static/images/${fileName}`, // Adjust this to the new path
-      imagePath: `/static/images/${imageName}`, // Adjust this to the new path
+      filePath: /tmp/products/${fileName}, // Adjust this if you use cloud storage URLs
+      imagePath: /tmp/products/${imageName}, // Adjust this if you use cloud storage URLs
     },
   });
 
@@ -59,7 +65,6 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   revalidatePath('/products');
   redirect('/admin/products');
 }
-
 const editSchema = addSchema.extend({
   file: fileSchema.optional(),
   image: imageSchema.optional(),
@@ -80,30 +85,30 @@ export async function updateProduct(
 
   if (product == null) return notFound();
 
-  let filePath: string | undefined = product.filePath ? path.join( 'public', product.filePath) : undefined;
+  let filePath = product.filePath;
   if (data.file != null && data.file.size > 0) {
-    // Remove the old file
+    // Use /tmp directory for temporary file storage
     if (filePath) {
-      await fs.unlink(filePath);
+      await fs.unlink(filePath); // Remove the old file
     }
-    const staticImagesDir = path.join( 'public', 'static', 'images');
-    await fs.mkdir(staticImagesDir, { recursive: true });
-    filePath = path.join(staticImagesDir, `${crypto.randomUUID()}-${data.file.name}`);
+    const tmpProductsDir = path.join('/tmp', 'products');
+    await fs.mkdir(tmpProductsDir, { recursive: true });
+    filePath = path.join(tmpProductsDir, ${crypto.randomUUID()}-${data.file.name});
     await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
-    filePath = `/static/images/${path.basename(filePath)}`; // Update to the relative path
+    filePath = /products/${path.basename(filePath)}; // Update to the relative path or URL if using cloud storage
   }
 
-  let imagePath: string | undefined = product.imagePath ? path.join( 'public', product.imagePath) : undefined;
+  let imagePath = product.imagePath;
   if (data.image != null && data.image.size > 0) {
-    // Remove the old image
+    // Use /tmp directory for temporary image storage
     if (imagePath) {
-      await fs.unlink(imagePath);
+      await fs.unlink(path.join('/tmp', 'public', imagePath)); // Remove the old image
     }
-    const staticImagesDir = path.join('public', 'static', 'images');
-    await fs.mkdir(staticImagesDir, { recursive: true });
-    imagePath = path.join(staticImagesDir, `${crypto.randomUUID()}-${data.image.name}`);
-    await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
-    imagePath = `/static/images/${path.basename(imagePath)}`; // Update to the relative path
+    const tmpPublicProductsDir = path.join('/tmp', 'public', 'products');
+    await fs.mkdir(tmpPublicProductsDir, { recursive: true });
+    imagePath = path.join('/products', ${crypto.randomUUID()}-${data.image.name});
+    await fs.writeFile(path.join('/tmp', 'public', imagePath), Buffer.from(await data.image.arrayBuffer()));
+    imagePath = /public${imagePath}; // Update to the relative path or URL if using cloud storage
   }
 
   await db.product.update({
@@ -112,8 +117,8 @@ export async function updateProduct(
       name: data.name,
       description: data.description,
       priceInCents: data.priceInCents,
-      filePath: filePath ?? undefined, // Handle null by converting to undefined
-      imagePath: imagePath ?? undefined, // Handle null by converting to undefined
+      filePath,
+      imagePath,
     },
   });
 
@@ -137,14 +142,9 @@ export async function deleteProduct(id: string) {
 
   if (product == null) return notFound()
 
-  if (product.filePath) {
-    await fs.unlink( 'public', product.filePath))
-  }
-  if (product.imagePath) {
-    await fs.unlink( 'public', product.imagePath))
-  }
+  await fs.unlink(product.filePath)
+  await fs.unlink(public${product.imagePath})
 
   revalidatePath("/")
   revalidatePath("/products")
 }
-
