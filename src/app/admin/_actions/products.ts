@@ -1,9 +1,9 @@
-import db from "@/db/db";
-import { z } from "zod";
-import fs from "fs/promises";
-import { notFound, redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import path from 'path';
+import db from "@/db/db"
+import { z } from "zod"
+import fs from "fs/promises"
+import { notFound, redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
+import path from 'path'
 
 const fileSchema = z.instanceof(File, { message: "Required" });
 const imageSchema = fileSchema.refine(
