@@ -1,12 +1,19 @@
 "use server"
 
+import AWS from 'aws-sdk'
 import db from "@/db/db"
 import { z } from "zod"
-import fs from "fs/promises"
 import { notFound, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
-import path from 'path';
 
+// Configure AWS SDK
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+});
+
+const s3 = new AWS.S3();
 
 const fileSchema = z.instanceof(File, { message: "Required" })
 const imageSchema = fileSchema.refine(
@@ -21,6 +28,18 @@ const addSchema = z.object({
   image: imageSchema.refine(file => file.size > 0, "Required"),
 })
 
+async function uploadToS3(buffer, fileName, bucket) {
+  const params = {
+    Bucket: bucket,
+    Key: fileName,
+    Body: buffer,
+    ContentType: 'application/octet-stream', // You might want to adjust based on file type
+    ACL: 'public-read' // This makes the file publicly accessible
+  };
+
+  return s3.upload(params).promise();
+}
+
 export async function addProduct(prevState: unknown, formData: FormData) {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
   if (result.success === false) {
@@ -29,24 +48,21 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
   const data = result.data;
 
-  // Use /tmp directory for file operations
-  const tmpProductsDir = path.join('e-commerce-official.vercel.app/tmp', 'products');
-  await fs.mkdir(tmpProductsDir, { recursive: true });
-
   // Handle file upload
   const fileName = `${crypto.randomUUID()}-${data.file.name}`;
-  const filePath = path.join(tmpProductsDir, fileName);
-  await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
+  const fileBuffer = Buffer.from(await data.file.arrayBuffer());
 
   // Handle image upload
   const imageName = `${crypto.randomUUID()}-${data.image.name}`;
-  const imagePath = path.join(tmpProductsDir, imageName);
-  await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
+  const imageBuffer = Buffer.from(await data.image.arrayBuffer());
 
-  // Optionally, upload files to a cloud storage and get URLs
-  // For example, upload to AWS S3 and get public URLs
-  // const fileUrl = await uploadToS3(filePath);
-  // const imageUrl = await uploadToS3(imagePath);
+  // Upload to S3
+  const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME);
+  const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME);
+
+  // Get URLs
+  const fileUrl = fileUploadResult.Location;
+  const imageUrl = imageUploadResult.Location;
 
   // Create product record in the database
   await db.product.create({
@@ -55,8 +71,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
       name: data.name,
       description: data.description,
       priceInCents: data.priceInCents,
-      filePath: `/tmp/products/${fileName}`, // Adjust this if you use cloud storage URLs
-      imagePath: `/tmp/products/${imageName}`, // Adjust this if you use cloud storage URLs
+      filePath: fileUrl,
+      imagePath: imageUrl,
     },
   });
 
@@ -65,6 +81,7 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   revalidatePath('/products');
   redirect('/admin/products');
 }
+
 const editSchema = addSchema.extend({
   file: fileSchema.optional(),
   image: imageSchema.optional(),
@@ -85,30 +102,22 @@ export async function updateProduct(
 
   if (product == null) return notFound();
 
-  let filePath = product.filePath;
+  let fileUrl = product.filePath;
   if (data.file != null && data.file.size > 0) {
-    // Use /tmp directory for temporary file storage
-    if (filePath) {
-      await fs.unlink(filePath); // Remove the old file
-    }
-    const tmpProductsDir = path.join('/tmp', 'products');
-    await fs.mkdir(tmpProductsDir, { recursive: true });
-    filePath = path.join(tmpProductsDir, `${crypto.randomUUID()}-${data.file.name}`);
-    await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
-    filePath = `/products/${path.basename(filePath)}`; // Update to the relative path or URL if using cloud storage
+    // Upload new file
+    const fileName = `${crypto.randomUUID()}-${data.file.name}`;
+    const fileBuffer = Buffer.from(await data.file.arrayBuffer());
+    const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME);
+    fileUrl = fileUploadResult.Location;
   }
 
-  let imagePath = product.imagePath;
+  let imageUrl = product.imagePath;
   if (data.image != null && data.image.size > 0) {
-    // Use /tmp directory for temporary image storage
-    if (imagePath) {
-      await fs.unlink(path.join('/tmp', 'public', imagePath)); // Remove the old image
-    }
-    const tmpPublicProductsDir = path.join('/tmp', 'public', 'products');
-    await fs.mkdir(tmpPublicProductsDir, { recursive: true });
-    imagePath = path.join('/products', `${crypto.randomUUID()}-${data.image.name}`);
-    await fs.writeFile(path.join('/tmp', 'public', imagePath), Buffer.from(await data.image.arrayBuffer()));
-    imagePath = `/public${imagePath}`; // Update to the relative path or URL if using cloud storage
+    // Upload new image
+    const imageName = `${crypto.randomUUID()}-${data.image.name}`;
+    const imageBuffer = Buffer.from(await data.image.arrayBuffer());
+    const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME);
+    imageUrl = imageUploadResult.Location;
   }
 
   await db.product.update({
@@ -117,8 +126,8 @@ export async function updateProduct(
       name: data.name,
       description: data.description,
       priceInCents: data.priceInCents,
-      filePath,
-      imagePath,
+      filePath: fileUrl,
+      imagePath: imageUrl,
     },
   });
 
@@ -142,8 +151,19 @@ export async function deleteProduct(id: string) {
 
   if (product == null) return notFound()
 
-  await fs.unlink(product.filePath)
-  await fs.unlink(`public${product.imagePath}`)
+  // Delete from S3
+  const fileName = product.filePath.split('/').pop(); // Extract filename
+  const imageName = product.imagePath.split('/').pop(); // Extract filename
+
+  await s3.deleteObject({
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: fileName,
+  }).promise();
+
+  await s3.deleteObject({
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: imageName,
+  }).promise();
 
   revalidatePath("/")
   revalidatePath("/products")
