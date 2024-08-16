@@ -1,5 +1,3 @@
-"use server"
-
 import AWS from 'aws-sdk'
 import db from "@/db/db"
 import { z } from "zod"
@@ -28,12 +26,13 @@ const addSchema = z.object({
   image: imageSchema.refine(file => file.size > 0, "Required"),
 })
 
-async function uploadToS3(buffer, fileName, bucket) {
-  const params = {
+// Add explicit type definitions
+async function uploadToS3(buffer: Buffer, fileName: string, bucket: string) {
+  const params: AWS.S3.PutObjectRequest = {
     Bucket: bucket,
     Key: fileName,
     Body: buffer,
-    ContentType: 'application/octet-stream', // You might want to adjust based on file type
+    ContentType: 'application/octet-stream', // Adjust based on file type
     ACL: 'public-read' // This makes the file publicly accessible
   };
 
@@ -57,8 +56,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const imageBuffer = Buffer.from(await data.image.arrayBuffer());
 
   // Upload to S3
-  const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME);
-  const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME);
+  const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME!);
+  const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME!);
 
   // Get URLs
   const fileUrl = fileUploadResult.Location;
@@ -107,7 +106,7 @@ export async function updateProduct(
     // Upload new file
     const fileName = `${crypto.randomUUID()}-${data.file.name}`;
     const fileBuffer = Buffer.from(await data.file.arrayBuffer());
-    const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME);
+    const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME!);
     fileUrl = fileUploadResult.Location;
   }
 
@@ -116,7 +115,7 @@ export async function updateProduct(
     // Upload new image
     const imageName = `${crypto.randomUUID()}-${data.image.name}`;
     const imageBuffer = Buffer.from(await data.image.arrayBuffer());
-    const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME);
+    const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME!);
     imageUrl = imageUploadResult.Location;
   }
 
@@ -156,13 +155,13 @@ export async function deleteProduct(id: string) {
   const imageName = product.imagePath.split('/').pop(); // Extract filename
 
   await s3.deleteObject({
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: fileName,
+    Bucket: process.env.AWS_S3_BUCKET_NAME!,
+    Key: fileName!,
   }).promise();
 
   await s3.deleteObject({
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: imageName,
+    Bucket: process.env.AWS_S3_BUCKET_NAME!,
+    Key: imageName!,
   }).promise();
 
   revalidatePath("/")
