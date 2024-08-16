@@ -30,7 +30,7 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const data = result.data;
 
   // Use /tmp directory for file operations
-  const tmpProductsDir = path.join('e-commerce-official.vercel.app/tmp', 'products');
+  const tmpProductsDir = path.join('/tmp', 'products');
   await fs.mkdir(tmpProductsDir, { recursive: true });
 
   // Handle file upload
