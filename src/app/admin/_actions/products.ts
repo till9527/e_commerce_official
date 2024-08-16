@@ -29,7 +29,7 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const data = result.data;
 
   // Use static/images directory for file operations
-  const staticImagesDir = path.join(process.cwd(), 'public', 'static', 'images');
+  const staticImagesDir = path.join( 'public', 'static', 'images');
   await fs.mkdir(staticImagesDir, { recursive: true });
 
   // Handle file upload
@@ -80,26 +80,26 @@ export async function updateProduct(
 
   if (product == null) return notFound();
 
-  let filePath: string | undefined = product.filePath ? path.join(process.cwd(), 'public', product.filePath) : undefined;
+  let filePath: string | undefined = product.filePath ? path.join( 'public', product.filePath) : undefined;
   if (data.file != null && data.file.size > 0) {
     // Remove the old file
     if (filePath) {
       await fs.unlink(filePath);
     }
-    const staticImagesDir = path.join(process.cwd(), 'public', 'static', 'images');
+    const staticImagesDir = path.join( 'public', 'static', 'images');
     await fs.mkdir(staticImagesDir, { recursive: true });
     filePath = path.join(staticImagesDir, `${crypto.randomUUID()}-${data.file.name}`);
     await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
     filePath = `/static/images/${path.basename(filePath)}`; // Update to the relative path
   }
 
-  let imagePath: string | undefined = product.imagePath ? path.join(process.cwd(), 'public', product.imagePath) : undefined;
+  let imagePath: string | undefined = product.imagePath ? path.join( 'public', product.imagePath) : undefined;
   if (data.image != null && data.image.size > 0) {
     // Remove the old image
     if (imagePath) {
       await fs.unlink(imagePath);
     }
-    const staticImagesDir = path.join(process.cwd(), 'public', 'static', 'images');
+    const staticImagesDir = path.join('public', 'static', 'images');
     await fs.mkdir(staticImagesDir, { recursive: true });
     imagePath = path.join(staticImagesDir, `${crypto.randomUUID()}-${data.image.name}`);
     await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
@@ -138,10 +138,10 @@ export async function deleteProduct(id: string) {
   if (product == null) return notFound()
 
   if (product.filePath) {
-    await fs.unlink(path.join(process.cwd(), 'public', product.filePath))
+    await fs.unlink( 'public', product.filePath))
   }
   if (product.imagePath) {
-    await fs.unlink(path.join(process.cwd(), 'public', product.imagePath))
+    await fs.unlink( 'public', product.imagePath))
   }
 
   revalidatePath("/")
