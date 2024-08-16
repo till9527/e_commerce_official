@@ -148,7 +148,3 @@ export async function deleteProduct(id: string) {
   revalidatePath("/")
   revalidatePath("/products")
 }
-
-  revalidatePath("/")
-  revalidatePath("/products")
-}
