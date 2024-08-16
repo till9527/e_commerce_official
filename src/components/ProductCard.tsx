@@ -16,7 +16,7 @@ type OrderInformationProps = {
 
 const dateFormatter = new Intl.DateTimeFormat("en", { dateStyle: "medium" })
 
-export function OrderInformation({
+export function ProductCard({
   order,
   product,
   downloadVerificationId,
