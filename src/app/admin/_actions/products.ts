@@ -49,11 +49,11 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const data = result.data;
 
   // Handle file upload
-  const fileName = ${crypto.randomUUID()}-${data.file.name};
+  const fileName = `${crypto.randomUUID()}-${data.file.name}`;
   const fileBuffer = Buffer.from(await data.file.arrayBuffer());
 
   // Handle image upload
-  const imageName = ${crypto.randomUUID()}-${data.image.name};
+  const imageName = `${crypto.randomUUID()}-${data.image.name}`;
   const imageBuffer = Buffer.from(await data.image.arrayBuffer());
 
   // Upload to S3
