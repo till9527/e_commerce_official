@@ -57,8 +57,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const imageBuffer = Buffer.from(await data.image.arrayBuffer());
 
   // Upload to S3
-  const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME!);
-  const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME!);
+  const fileUploadResult = await uploadToS3(fileBuffer, fileName);
+  const imageUploadResult = await uploadToS3(imageBuffer, imageName);
 
   // Get URLs
   const fileUrl = fileUploadResult.Location;
@@ -107,7 +107,7 @@ export async function updateProduct(
     // Upload new file
     const fileName = `${crypto.randomUUID()}-${data.file.name}`;
     const fileBuffer = Buffer.from(await data.file.arrayBuffer());
-    const fileUploadResult = await uploadToS3(fileBuffer, fileName, process.env.AWS_S3_BUCKET_NAME!);
+    const fileUploadResult = await uploadToS3(fileBuffer, fileName);
     fileUrl = fileUploadResult.Location;
   }
 
