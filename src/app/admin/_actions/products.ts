@@ -30,16 +30,16 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const data = result.data;
 
   // Use /tmp directory for file operations
-  const tmpProductsDir = path.join('/tmp', 'products');
+  const tmpProductsDir = path.join('e-commerce-official.vercel.app/tmp', 'products');
   await fs.mkdir(tmpProductsDir, { recursive: true });
 
   // Handle file upload
-  const fileName = ${crypto.randomUUID()}-${data.file.name};
+  const fileName = `${crypto.randomUUID()}-${data.file.name}`;
   const filePath = path.join(tmpProductsDir, fileName);
   await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
 
   // Handle image upload
-  const imageName = ${crypto.randomUUID()}-${data.image.name};
+  const imageName = `${crypto.randomUUID()}-${data.image.name}`;
   const imagePath = path.join(tmpProductsDir, imageName);
   await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
 
@@ -55,8 +55,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
       name: data.name,
       description: data.description,
       priceInCents: data.priceInCents,
-      filePath: /tmp/products/${fileName}, // Adjust this if you use cloud storage URLs
-      imagePath: /tmp/products/${imageName}, // Adjust this if you use cloud storage URLs
+      filePath: `/tmp/products/${fileName}`, // Adjust this if you use cloud storage URLs
+      imagePath: `/tmp/products/${imageName}`, // Adjust this if you use cloud storage URLs
     },
   });
 
@@ -93,9 +93,9 @@ export async function updateProduct(
     }
     const tmpProductsDir = path.join('/tmp', 'products');
     await fs.mkdir(tmpProductsDir, { recursive: true });
-    filePath = path.join(tmpProductsDir, ${crypto.randomUUID()}-${data.file.name});
+    filePath = path.join(tmpProductsDir, `${crypto.randomUUID()}-${data.file.name}`);
     await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
-    filePath = /products/${path.basename(filePath)}; // Update to the relative path or URL if using cloud storage
+    filePath = `/products/${path.basename(filePath)}`; // Update to the relative path or URL if using cloud storage
   }
 
   let imagePath = product.imagePath;
@@ -106,9 +106,9 @@ export async function updateProduct(
     }
     const tmpPublicProductsDir = path.join('/tmp', 'public', 'products');
     await fs.mkdir(tmpPublicProductsDir, { recursive: true });
-    imagePath = path.join('/products', ${crypto.randomUUID()}-${data.image.name});
+    imagePath = path.join('/products', `${crypto.randomUUID()}-${data.image.name}`);
     await fs.writeFile(path.join('/tmp', 'public', imagePath), Buffer.from(await data.image.arrayBuffer()));
-    imagePath = /public${imagePath}; // Update to the relative path or URL if using cloud storage
+    imagePath = `/public${imagePath}`; // Update to the relative path or URL if using cloud storage
   }
 
   await db.product.update({
@@ -143,7 +143,11 @@ export async function deleteProduct(id: string) {
   if (product == null) return notFound()
 
   await fs.unlink(product.filePath)
-  await fs.unlink(public${product.imagePath})
+  await fs.unlink(`public${product.imagePath}`)
+
+  revalidatePath("/")
+  revalidatePath("/products")
+}
 
   revalidatePath("/")
   revalidatePath("/products")
