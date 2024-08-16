@@ -19,6 +19,7 @@
     "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.3.0",
     "@vercel/postgres": "^0.9.0",
+    "aws-sdk": "^2.1677.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.427.0",
@@ -30,8 +31,7 @@
     "stripe": "^16.7.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8",
-    "aws-sdk": "^2.123.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -46,3 +46,4 @@
     "typescript": "^5"
   }
 }
+
