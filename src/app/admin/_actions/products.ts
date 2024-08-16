@@ -30,11 +30,9 @@ const addSchema = z.object({
 async function uploadToS3(buffer: Buffer, fileName: string) {
   const bucketName = process.env.AWS_S3_BUCKET_NAME!;
   const params: AWS.S3.PutObjectRequest = {
-    Bucket: bucketName,
+    Bucket: "e-commerce-official-bucket",
     Key: fileName,
     Body: buffer,
-    ContentType: 'application/octet-stream', // Adjust based on file type
-    ACL: 'public-read' // This makes the file publicly accessible
   };
 
   return s3.upload(params).promise();
