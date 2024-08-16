@@ -1,17 +1,14 @@
-"use server"
-
-import db from "@/db/db"
-import { z } from "zod"
-import fs from "fs/promises"
-import { notFound, redirect } from "next/navigation"
-import { revalidatePath } from "next/cache"
+import db from "@/db/db";
+import { z } from "zod";
+import fs from "fs/promises";
+import { notFound, redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import path from 'path';
 
-
-const fileSchema = z.instanceof(File, { message: "Required" })
+const fileSchema = z.instanceof(File, { message: "Required" });
 const imageSchema = fileSchema.refine(
   file => file.size === 0 || file.type.startsWith("image/")
-)
+);
 
 const addSchema = z.object({
   name: z.string().min(1),
@@ -19,7 +16,7 @@ const addSchema = z.object({
   priceInCents: z.coerce.number().int().min(1),
   file: fileSchema.refine(file => file.size > 0, "Required"),
   image: imageSchema.refine(file => file.size > 0, "Required"),
-})
+});
 
 export async function addProduct(prevState: unknown, formData: FormData) {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -29,11 +26,10 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
   const data = result.data;
 
-  // Use /tmp directory for file operations
+  // Handle file upload
   const tmpProductsDir = path.join('/tmp', 'products');
   await fs.mkdir(tmpProductsDir, { recursive: true });
 
-  // Handle file upload
   const fileName = `${crypto.randomUUID()}-${data.file.name}`;
   const filePath = path.join(tmpProductsDir, fileName);
   await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
@@ -43,11 +39,6 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   const imagePath = path.join(tmpProductsDir, imageName);
   await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
 
-  // Optionally, upload files to a cloud storage and get URLs
-  // For example, upload to AWS S3 and get public URLs
-  // const fileUrl = await uploadToS3(filePath);
-  // const imageUrl = await uploadToS3(imagePath);
-
   // Create product record in the database
   await db.product.create({
     data: {
@@ -55,8 +46,8 @@ export async function addProduct(prevState: unknown, formData: FormData) {
       name: data.name,
       description: data.description,
       priceInCents: data.priceInCents,
-      filePath: `/tmp/products/${fileName}`, // Adjust this if you use cloud storage URLs
-      imagePath: `/tmp/products/${imageName}`, // Adjust this if you use cloud storage URLs
+      filePath: `/products/${fileName}`, // Assuming you move this to static directory
+      imagePath: `/products/${imageName}`, // Assuming you move this to static directory
     },
   });
 
@@ -65,10 +56,11 @@ export async function addProduct(prevState: unknown, formData: FormData) {
   revalidatePath('/products');
   redirect('/admin/products');
 }
+
 const editSchema = addSchema.extend({
   file: fileSchema.optional(),
   image: imageSchema.optional(),
-})
+});
 
 export async function updateProduct(
   id: string,
@@ -87,28 +79,22 @@ export async function updateProduct(
 
   let filePath = product.filePath;
   if (data.file != null && data.file.size > 0) {
-    // Use /tmp directory for temporary file storage
     if (filePath) {
-      await fs.unlink(filePath); // Remove the old file
+      await fs.unlink(`/tmp/products/${path.basename(filePath)}`); // Remove the old file
     }
-    const tmpProductsDir = path.join('/tmp', 'products');
-    await fs.mkdir(tmpProductsDir, { recursive: true });
-    filePath = path.join(tmpProductsDir, `${crypto.randomUUID()}-${data.file.name}`);
+    filePath = path.join('/tmp', 'products', `${crypto.randomUUID()}-${data.file.name}`);
     await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
-    filePath = `/products/${path.basename(filePath)}`; // Update to the relative path or URL if using cloud storage
+    filePath = `/products/${path.basename(filePath)}`; // Update to the static path if you move it
   }
 
   let imagePath = product.imagePath;
   if (data.image != null && data.image.size > 0) {
-    // Use /tmp directory for temporary image storage
     if (imagePath) {
-      await fs.unlink(path.join('/tmp', 'public', imagePath)); // Remove the old image
+      await fs.unlink(`/tmp/products/${path.basename(imagePath)}`); // Remove the old image
     }
-    const tmpPublicProductsDir = path.join('/tmp', 'public', 'products');
-    await fs.mkdir(tmpPublicProductsDir, { recursive: true });
-    imagePath = path.join('/products', `${crypto.randomUUID()}-${data.image.name}`);
-    await fs.writeFile(path.join('/tmp', 'public', imagePath), Buffer.from(await data.image.arrayBuffer()));
-    imagePath = `/public${imagePath}`; // Update to the relative path or URL if using cloud storage
+    imagePath = path.join('/tmp', 'products', `${crypto.randomUUID()}-${data.image.name}`);
+    await fs.writeFile(imagePath, Buffer.from(await data.image.arrayBuffer()));
+    imagePath = `/products/${path.basename(imagePath)}`; // Update to the static path if you move it
   }
 
   await db.product.update({
@@ -131,20 +117,20 @@ export async function toggleProductAvailability(
   id: string,
   isAvailableForPurchase: boolean
 ) {
-  await db.product.update({ where: { id }, data: { isAvailableForPurchase } })
+  await db.product.update({ where: { id }, data: { isAvailableForPurchase } });
 
-  revalidatePath("/")
-  revalidatePath("/products")
+  revalidatePath("/");
+  revalidatePath("/products");
 }
 
 export async function deleteProduct(id: string) {
-  const product = await db.product.delete({ where: { id } })
+  const product = await db.product.delete({ where: { id } });
 
-  if (product == null) return notFound()
+  if (product == null) return notFound();
 
-  await fs.unlink(product.filePath)
-  await fs.unlink(`public${product.imagePath}`)
+  await fs.unlink(`/tmp/products/${path.basename(product.filePath)}`);
+  await fs.unlink(`/tmp/products/${path.basename(product.imagePath)}`);
 
-  revalidatePath("/")
-  revalidatePath("/products")
+  revalidatePath("/");
+  revalidatePath("/products");
 }
