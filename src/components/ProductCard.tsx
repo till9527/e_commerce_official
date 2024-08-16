@@ -1,82 +1,69 @@
 import { formatCurrency } from "@/lib/formatters"
 import {
-  Button,
-  Column,
-  Img,
-  Row,
-  Section,
-  Text,
-} from "@react-email/components"
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card"
+import { Button } from "./ui/button"
+import Link from "next/link"
+import Image from "next/image"
 
-type OrderInformationProps = {
+type ProductCardProps = {
   order: { id: string; createdAt: Date; pricePaidInCents: number }
   product: { imagePath: string; name: string; description: string }
   downloadVerificationId: string
 }
 
-const dateFormatter = new Intl.DateTimeFormat("en", { dateStyle: "medium" })
-
 export function ProductCard({
   order,
   product,
-  downloadVerificationId,
-}: OrderInformationProps) {
-  // Hardcoded base URL for images
+  downloadVerificationId
+}: ProductCardProps) {
   const baseUrl = "https://e-commerce-official.vercel.app/"
-
   return (
-    <>
-      <Section>
-        <Row>
-          <Column>
-            <Text className="mb-0 text-gray-500 whitespace-nowrap text-nowrap mr-4">
-              Order ID
-            </Text>
-            <Text className="mt-0 mr-4">{order.id}</Text>
-          </Column>
-          <Column>
-            <Text className="mb-0 text-gray-500 whitespace-nowrap text-nowrap mr-4">
-              Purchased On
-            </Text>
-            <Text className="mt-0 mr-4">
-              {dateFormatter.format(order.createdAt)}
-            </Text>
-          </Column>
-          <Column>
-            <Text className="mb-0 text-gray-500 whitespace-nowrap text-nowrap mr-4">
-              Price Paid
-            </Text>
-            <Text className="mt-0 mr-4">
-              {formatCurrency(order.pricePaidInCents / 100)}
-            </Text>
-          </Column>
-        </Row>
-      </Section>
-      <Section className="border border-solid border-gray-500 rounded-lg p-4 md:p-6 my-4">
-        <Img
-          width="100%"
-          alt={product.name}
-          src={`${baseUrl}${product.imagePath}`} // Updated to use the hardcoded base URL
-        />
-        <Row className="mt-8">
-          <Column className="align-bottom">
-            <Text className="text-lg font-bold m-0 mr-4">{product.name}</Text>
-          </Column>
-          <Column align="right">
-            <Button
-              href={`${process.env.NEXT_PUBLIC_SERVER_URL}/products/download/${downloadVerificationId}`}
-              className="bg-black text-white px-6 py-4 rounded text-lg"
-            >
-              Download
-            </Button>
-          </Column>
-        </Row>
-        <Row>
-          <Column>
-            <Text className="text-gray-500 mb-0">{product.description}</Text>
-          </Column>
-        </Row>
-      </Section>
-    </>
+    <Card className="flex overflow-hidden flex-col">
+      <div className="relative w-full h-auto aspect-video">
+        <Image src={`${baseUrl}${product.imagePath}`} fill alt={name} />
+      </div>
+      <CardHeader>
+        <CardTitle>{name}</CardTitle>
+        <CardDescription>{formatCurrency(priceInCents / 100)}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        <p className="line-clamp-4">{description}</p>
+      </CardContent>
+      <CardFooter>
+        <Button asChild size="lg" className="w-full">
+          <Link href={`/products/${id}/purchase`}>Purchase</Link>
+        </Button>
+      </CardFooter>
+    </Card>
+  )
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <Card className="overflow-hidden flex flex-col animate-pulse">
+      <div className="w-full aspect-video bg-gray-300" />
+      <CardHeader>
+        <CardTitle>
+          <div className="w-3/4 h-6 rounded-full bg-gray-300" />
+        </CardTitle>
+        <CardDescription>
+          <div className="w-1/2 h-4 rounded-full bg-gray-300" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <div className="w-full h-4 rounded-full bg-gray-300" />
+        <div className="w-full h-4 rounded-full bg-gray-300" />
+        <div className="w-3/4 h-4 rounded-full bg-gray-300" />
+      </CardContent>
+      <CardFooter>
+        <Button className="w-full" disabled size="lg"></Button>
+      </CardFooter>
+    </Card>
   )
 }
