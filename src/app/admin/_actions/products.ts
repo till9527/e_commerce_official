@@ -116,7 +116,7 @@ export async function updateProduct(
     // Upload new image
     const imageName = `${crypto.randomUUID()}-${data.image.name}`;
     const imageBuffer = Buffer.from(await data.image.arrayBuffer());
-    const imageUploadResult = await uploadToS3(imageBuffer, imageName, process.env.AWS_S3_BUCKET_NAME!);
+    const imageUploadResult = await uploadToS3(imageBuffer, imageName);
     imageUrl = imageUploadResult.Location;
   }
 
