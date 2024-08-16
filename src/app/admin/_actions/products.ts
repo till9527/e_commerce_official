@@ -27,9 +27,10 @@ const addSchema = z.object({
 })
 
 // Add explicit type definitions
-async function uploadToS3(buffer: Buffer, fileName: string, bucket: string) {
+async function uploadToS3(buffer: Buffer, fileName: string) {
+  const bucketName = process.env.AWS_S3_BUCKET_NAME;
   const params: AWS.S3.PutObjectRequest = {
-    Bucket: bucket,
+    Bucket: bucketName,
     Key: fileName,
     Body: buffer,
     ContentType: 'application/octet-stream', // Adjust based on file type
