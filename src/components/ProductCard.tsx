@@ -12,21 +12,24 @@ import Link from "next/link"
 import Image from "next/image"
 
 type ProductCardProps = {
-  order: { id: string; createdAt: Date; pricePaidInCents: number }
-  product: { imagePath: string; name: string; description: string }
-  downloadVerificationId: string
+  id: string
+  name: string
+  priceInCents: number
+  description: string
+  imagePath: string
 }
 
 export function ProductCard({
-  order,
-  product,
-  downloadVerificationId
+  id,
+  name,
+  priceInCents,
+  description,
+  imagePath,
 }: ProductCardProps) {
-  const baseUrl = "https://e-commerce-official.vercel.app/"
   return (
     <Card className="flex overflow-hidden flex-col">
       <div className="relative w-full h-auto aspect-video">
-        <Image src={`${baseUrl}${product.imagePath}`} fill alt={name} />
+        <Image src={imagePath} fill alt={name} />
       </div>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
