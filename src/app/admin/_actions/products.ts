@@ -8,8 +8,8 @@ import db from '@/db/db';
 // AWS S3 Configuration
 const s3 = new AWS.S3({
   region: 'us-east-2', // e.g., 'us-east-1'
-  accessKeyId: 'AKIAQGYBPUKFTTIUY2Q7',
-  secretAccessKey:'3jjchBwIjeQDj1vn3/RGUXJcZtjr7kpUoY6wuisJ',
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey:process.env.AWS_ACCESS_KEY_SECRET,
 });
 
 const bucketName = 'e-commerce-official-bucket'; // replace with your bucket name
@@ -154,4 +154,3 @@ export async function deleteProduct(id: string) {
   revalidatePath('/');
   revalidatePath('/products');
 }
-
