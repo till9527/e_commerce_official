@@ -21,6 +21,7 @@ import {
         name: string
         imagePath: string
         description: string
+        filePath: string
       }
     }[]
   }
