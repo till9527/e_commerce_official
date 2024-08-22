@@ -47,7 +47,19 @@ export default async function SuccessPage({
           <div className="line-clamp-3 text-muted-foreground">
             {product.description}
           </div>
-          
+          <Button className="mt-4" size="lg" asChild>
+            {isSuccess ? (
+              <a
+                href={`/products/download/${await createDownloadVerification(
+                  product.id
+                )}`}
+              >
+                Download
+              </a>
+            ) : (
+              <Link href={`/products/${product.id}/purchase`}>Try Again</Link>
+            )}
+          </Button>
         </div>
       </div>
     </div>
