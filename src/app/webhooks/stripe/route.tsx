@@ -4,16 +4,8 @@ import Stripe from "stripe";
 import { Resend } from "resend";
 import PurchaseReceiptEmail from "@/email/PurchaseReceipt";
 
-// Initialize Stripe and Resend instances with environment variables
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2020-08-27' });
 const resend = new Resend(process.env.RESEND_API_KEY as string);
-
-// Disable body parsing so Stripe signature validation works correctly
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export async function POST(req: NextRequest) {
   let event;
@@ -82,3 +74,4 @@ export async function POST(req: NextRequest) {
   // Return a success response to Stripe
   return new NextResponse("Webhook received", { status: 200 });
 }
+
