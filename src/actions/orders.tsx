@@ -32,6 +32,7 @@ export async function emailOrderHistory(
               id: true,
               name: true,
               imagePath: true,
+              filePath:true,
               description: true,
             },
           },
