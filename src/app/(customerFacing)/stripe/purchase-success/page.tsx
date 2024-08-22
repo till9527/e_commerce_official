@@ -50,9 +50,7 @@ export default async function SuccessPage({
           <Button className="mt-4" size="lg" asChild>
             {isSuccess ? (
               <a
-                href={`/products/download/${await createDownloadVerification(
-                  product.id
-                )}`}
+                href={product.filePath}
               >
                 Download
               </a>
