@@ -38,6 +38,8 @@ import {
           description: "Some description",
           imagePath:
             "/products/5aba7442-e4a5-4d2e-bfa7-5bd358cdad64-02 - What Is Next.js.jpg",
+           filePath:
+               "some/path",
         },
       },
       {
