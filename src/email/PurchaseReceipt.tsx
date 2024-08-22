@@ -14,6 +14,7 @@ import {
       name: string
       imagePath: string
       description: string
+      filePath: string
     }
     order: { id: string; createdAt: Date; pricePaidInCents: number }
     downloadVerificationId: string
