@@ -52,6 +52,8 @@ import {
           description: "Some other desc",
           imagePath:
             "/products/db3035a5-e762-41b0-996f-d54ec730bc9c-01 - Course Introduction.jpg",
+            filePath:
+               "some/path1",
         },
       },
     ],
