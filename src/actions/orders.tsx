@@ -1,12 +1,18 @@
 "use server"
 
 import db from "@/db/db"
-import OrderHistoryEmail from "@/email/OrderHistory"
-import { Resend } from "resend"
+import nodemailer from "nodemailer"
 import { z } from "zod"
 
 const emailSchema = z.string().email()
-const resend = new Resend(process.env.RESEND_API_KEY as string)
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or another email service provider
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+})
 
 export async function emailOrderHistory(
   prevState: unknown,
@@ -48,7 +54,7 @@ export async function emailOrderHistory(
     }
   }
 
-  const orders = user.orders.map(async order => {
+  const orders = await Promise.all(user.orders.map(async order => {
     return {
       ...order,
       downloadVerificationId: (
@@ -60,21 +66,59 @@ export async function emailOrderHistory(
         })
       ).id,
     }
-  })
+  }))
 
-  const data = await resend.emails.send({
-    from: `Support <${process.env.SENDER_EMAIL}>`,
-    to: user.email,
-    subject: "Order History",
-    react: <OrderHistoryEmail orders={await Promise.all(orders)} />,
-  })
+  // Generate HTML content
+  const orderItemsHtml = orders.map(order => `
+    <div style="margin-bottom: 20px;">
+      <h2 style="font-size: 18px; color: #333;">${order.product.name}</h2>
+      <img src="${order.product.imagePath}" alt="${order.product.name}" style="
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+      "/>
+      <p style="font-size: 16px; color: #555;">Order ID: ${order.id}</p>
+      <p style="font-size: 16px; color: #555;">Price Paid: $${order.pricePaidInCents / 100}</p>
+      <a href="${order.product.filePath}" style="
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #007bff;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+      ">Download Here</a>
+    </div>
+  `).join('')
 
-  if (data.error) {
+  const emailHtml = `
+    <html>
+      <body>
+        <h1 style="font-size: 24px; color: #333;">Your Order History</h1>
+        <p style="font-size: 16px; color: #555;">Here is your order history and download links:</p>
+        ${orderItemsHtml}
+      </body>
+    </html>
+  `
+
+  // Send Email
+  try {
+    await transporter.sendMail({
+      from: `Support <${process.env.SENDER_EMAIL}>`,
+      to: user.email,
+      subject: "Your Order History",
+      html: emailHtml,
+    })
+
+    return {
+      message:
+        "Check your email to view your order history and download your products.",
+    }
+  } catch (error) {
+    console.error("Failed to send email", error)
     return { error: "There was an error sending your email. Please try again." }
-  }
-
-  return {
-    message:
-      "Check your email to view your order history and download your products.",
   }
 }
