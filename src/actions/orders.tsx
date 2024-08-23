@@ -79,7 +79,7 @@ export async function emailOrderHistory(
         margin-bottom: 10px;
       "/>
       <p style="font-size: 16px; color: #555;">Order ID: ${order.id}</p>
-      <p style="font-size: 16px; color: #555;">Order Description: ${order.description}</p>
+      <p style="font-size: 16px; color: #555;">Order Description: ${order.product.description}</p>
       <p style="font-size: 16px; color: #555;">Price Paid: $${order.pricePaidInCents / 100}</p>
       <a href="${order.product.filePath}" style="
         display: inline-block;
