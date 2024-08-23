@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       <h1>Order Confirmation</h1>
       <p>Thank you for your order of ${product.name}.</p>
       <p>Your order number is: ${order.id}</p>
+      <p>You paid: ${product.priceInCents}</p>
       <img src="${product.imagePath}" alt="${product.name}" style="
       display: block;
       max-width: 100%;
