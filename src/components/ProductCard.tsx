@@ -28,7 +28,7 @@ export function ProductCard({
 }: ProductCardProps) {
   return (
     <Card className="flex overflow-hidden flex-col">
-      <div className="aspect-video flex-shrink-0 w-1/3 relative">
+      <div className="relative w-auto h-auto aspect-video">
         <Image src={imagePath} fill alt={name} />
       </div>
       <CardHeader>
