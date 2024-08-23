@@ -57,8 +57,18 @@ export async function POST(req: NextRequest) {
       <h1>Order Confirmation</h1>
       <p>Thank you for your order of ${product.name}.</p>
       <p>Your order number is: ${order.id}</p>
-      <p>Your download link will expire in 24 hours.</p>
-      <a href="https://your-site.com/download/${downloadVerification.id}">Download here</a>
+      <img src="${product.imagePath}" alt="${product.name}" style="max-width: 100%; height: auto;"/>
+      <a href="${product.filePath}" style="
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #007bff;
+      text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+    ">Download Here</a>
     </body>
   </html>
 `;
