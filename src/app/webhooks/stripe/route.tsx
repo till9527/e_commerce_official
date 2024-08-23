@@ -1,10 +1,9 @@
-"use server"
 import db from "@/db/db";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import nodemailer from "nodemailer";
 import PurchaseReceiptEmail from "@/email/PurchaseReceipt";
-import ReactDOMServer from 'react-dom/server';
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2024-06-20' });
 
@@ -53,13 +52,17 @@ export async function POST(req: NextRequest) {
     });
 
     // Convert the React component into an HTML string
-    const emailHtml = ReactDOMServer.renderToStaticMarkup(
-      <PurchaseReceiptEmail
-        order={order}
-        product={product}
-        downloadVerificationId={downloadVerification.id}
-      />
-    );
+    const emailHtml = `
+  <html>
+    <body>
+      <h1>Order Confirmation</h1>
+      <p>Thank you for your order of ${product.name}.</p>
+      <p>Your order number is: ${order.id}</p>
+      <p>Your download link will expire in 24 hours.</p>
+      <a href="https://your-site.com/download/${downloadVerification.id}">Download here</a>
+    </body>
+  </html>
+`;
 
     // Setup Nodemailer
     const transporter = nodemailer.createTransport({
