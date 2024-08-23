@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     // Send an order confirmation email to the user
     await resend.emails.send({
-      from: Support <${process.env.SENDER_EMAIL}>,
+      from: `Support <${process.env.SENDER_EMAIL}>`,
       to: email,
       subject: "Order Confirmation",
       react: (
