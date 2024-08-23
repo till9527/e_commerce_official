@@ -11,6 +11,7 @@ export default function Layout({
     <>
       <Nav>
         <NavLink href="/">Home</NavLink>
+        <NavLink href="/admin">Admin Dashboard</NavLink>
         <NavLink href="/products">Products</NavLink>
         <NavLink href="/orders">My Orders</NavLink>
       </Nav>
