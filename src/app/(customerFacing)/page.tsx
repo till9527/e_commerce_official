@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const getMostPopularProducts = cache(
   () => {
@@ -37,6 +38,7 @@ export default function HomePage() {
       />
       <ProductGridSection title="Newest" productsFetcher={getNewestProducts} />
       <Analytics />
+      <SpeedInsights/>
     </main>
   )
 }
