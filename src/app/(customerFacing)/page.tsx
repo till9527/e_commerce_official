@@ -6,6 +6,7 @@ import { Product } from "@prisma/client"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
+import { Analytics } from "@vercel/analytics/react"
 
 const getMostPopularProducts = cache(
   () => {
@@ -35,6 +36,7 @@ export default function HomePage() {
         productsFetcher={getMostPopularProducts}
       />
       <ProductGridSection title="Newest" productsFetcher={getNewestProducts} />
+      <Analytics />
     </main>
   )
 }
