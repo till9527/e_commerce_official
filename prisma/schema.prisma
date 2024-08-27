@@ -14,6 +14,7 @@ model Product{
   id String @id @default(uuid())
   name                   String
   priceInCents           Int
+  createdBy              String
   filePath               String
   imagePath              String
   description            String
