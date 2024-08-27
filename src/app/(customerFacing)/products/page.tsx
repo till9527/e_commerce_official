@@ -61,8 +61,11 @@ export default function ProductsPage() {
     </div>
   );
 }
-
-async function ProductsSuspense({ currentPage, productsPerPage }) {
+type ProductsSuspenseProps = {
+  currentPage: number;
+  productsPerPage: number;
+};
+async function ProductsSuspense({ currentPage, productsPerPage }: ProductsSuspenseProps) {
   const products = await getProducts();
   const startIndex = (currentPage - 1) * productsPerPage;
   const selectedProducts = products.slice(startIndex, startIndex + productsPerPage);
