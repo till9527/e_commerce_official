@@ -1,8 +1,7 @@
-"use client";
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
-import { Suspense, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -20,8 +19,18 @@ const getProducts = cache(() => {
 }, ["/products", "getProducts"]);
 
 export default function ProductsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [products, setProducts] = useState<any[]>([]);
   const productsPerPage = 6;
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const fetchedProducts = await getProducts();
+      setProducts(fetchedProducts);
+    }
+
+    fetchProducts();
+  }, []);
 
   const handleNextPage = () => {
     setCurrentPage(prevPage => prevPage + 1);
@@ -31,19 +40,20 @@ export default function ProductsPage() {
     setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
   };
 
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const selectedProducts = products.slice(startIndex, startIndex + productsPerPage);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <Suspense
-        fallback={
-          <>
-            {Array.from({ length: productsPerPage }).map((_, index) => (
-              <ProductCardSkeleton key={index} />
-            ))}
-          </>
-        }
-      >
-        <ProductsSuspense currentPage={currentPage} productsPerPage={productsPerPage} />
-      </Suspense>
+      {products.length === 0 ? (
+        <>
+          {Array.from({ length: productsPerPage }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        </>
+      ) : (
+        selectedProducts.map(product => <ProductCard key={product.id} {...product} />)
+      )}
 
       <Pagination>
         <PaginationContent>
@@ -60,15 +70,4 @@ export default function ProductsPage() {
       </Pagination>
     </div>
   );
-}
-type ProductsSuspenseProps = {
-  currentPage: number;
-  productsPerPage: number;
-};
-async function ProductsSuspense({ currentPage, productsPerPage }: ProductsSuspenseProps) {
-  const products = await getProducts();
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const selectedProducts = products.slice(startIndex, startIndex + productsPerPage);
-
-  return selectedProducts.map(product => <ProductCard key={product.id} {...product} />);
 }
