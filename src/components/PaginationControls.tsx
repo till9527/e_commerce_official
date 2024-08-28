@@ -21,7 +21,10 @@ const PaginationControls = () => {
         <PaginationItem>
           <PaginationPrevious
             href="#"
-            onClick={() => handlePagination(currentPage > 1 ? currentPage - 1 : 1)}
+            onClick={(e) => {
+              e.preventDefault(); // Prevent default anchor behavior
+              if (currentPage > 1) handlePagination(currentPage - 1);
+            }}
             className={`pagination-button ${currentPage === 1 ? "cursor-not-allowed opacity-50" : ""}`}
           >
             Previous
