@@ -53,5 +53,4 @@ const PaginationControls = () => {
 
 export default PaginationControls;
 
-export default PaginationControls;
 
