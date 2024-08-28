@@ -1,35 +1,57 @@
-// components/PaginationControls.tsx
-"use client"
+"use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Pagination, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"; // Adjust the import as needed
 
-const PaginationControls = ({ currentPage }: { currentPage: number }) => {
+const ITEMS_PER_PAGE = 6;
+
+const PaginationControls = () => {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || "1");
+  
   const handlePagination = (page: number) => {
+    if (page < 1) return;
     router.push(`/products?page=${page}`);
   };
 
   return (
-    <div className="pagination">
-      <button
-        onClick={() => handlePagination(currentPage > 1 ? currentPage - 1 : 1)}
-        className="pagination-button"
-        disabled={currentPage === 1}
-      >
-        Previous
-      </button>
-      <span className="pagination-page">{currentPage}</span>
-      <button
-        onClick={() => handlePagination(currentPage + 1)}
-        className="pagination-button"
-        disabled={false} // Replace with logic to disable if on last page
-      >
-        Next
-      </button>
+    <div className="flex justify-center mt-8 mb-4">
+      <Pagination>
+        <PaginationItem>
+          <PaginationPrevious
+            href="#"
+            onClick={() => handlePagination(currentPage > 1 ? currentPage - 1 : 1)}
+            className={currentPage === 1 ? "cursor-not-allowed opacity-50" : ""}
+          >
+            Previous
+          </PaginationPrevious>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink
+            href="#"
+            onClick={() => handlePagination(1)}
+            className={currentPage === 1 ? "text-blue-500" : ""}
+          >
+            {currentPage}
+          </PaginationLink>
+        </PaginationItem>
+        {/* Add logic for additional pages if necessary */}
+        <PaginationItem>
+          <PaginationLink
+            href="#"
+            onClick={() => handlePagination(currentPage + 1)}
+            className={currentPage === 1 ? "cursor-not-allowed opacity-50" : ""}
+          >
+            Next
+          </PaginationLink>
+        </PaginationItem>
+      </Pagination>
     </div>
   );
 };
+
+export default PaginationControls;
 
 export default PaginationControls;
 
