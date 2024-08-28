@@ -5,10 +5,11 @@ import { Pagination, PaginationItem, PaginationLink, PaginationNext, PaginationP
 
 const ITEMS_PER_PAGE = 6;
 
-const PaginationControls = () => {
+const PaginationControls = ({totalItems}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || "1");
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   const handlePagination = (page: number) => {
     if (page < 1) return;
@@ -37,8 +38,11 @@ const PaginationControls = () => {
         <PaginationItem>
           <PaginationNext
             href="#"
-            onClick={() => handlePagination(currentPage + 1)}
-            className={`pagination-button ${false ? "cursor-not-allowed opacity-50" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage < totalPages) handlePagination(currentPage + 1);
+            }}
+            className={`pagination-button ${currentPage === totalPages ? "cursor-not-allowed opacity-50" : ""}`}
           >
             Next
           </PaginationNext>
