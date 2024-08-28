@@ -13,7 +13,18 @@ import {
 } from "@/components/ui/pagination";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 6; // Number of items per page
+
+// Define the getProducts function here
+async function getProducts(page: number) {
+  const offset = (page - 1) * ITEMS_PER_PAGE;
+  return await db.product.findMany({
+    where: { isAvailableForPurchase: true },
+    orderBy: { name: "asc" },
+    take: ITEMS_PER_PAGE,
+    skip: offset,
+  });
+}
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -65,7 +76,7 @@ export default function ProductsPage() {
 }
 
 async function ProductsSuspense({ page }: { page: number }) {
-  const products = await getProducts(page); // Directly fetch products
+  const products = await getProducts(page); // Fetch products for the current page
 
   return products.map((product) => <ProductCard key={product.id} {...product} />);
 }
