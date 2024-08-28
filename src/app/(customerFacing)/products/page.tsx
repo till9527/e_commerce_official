@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
@@ -6,13 +7,12 @@ import { Suspense } from "react";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useRouter } from "next/navigation";  // <-- Updated import
+import { useRouter, useSearchParams } from "next/navigation"; // <-- Updated imports
 
 const ITEMS_PER_PAGE = 6;
 
@@ -28,7 +28,8 @@ const getProducts = cache((page) => {
 
 export default function ProductsPage() {
   const router = useRouter();
-  const page = parseInt(router.query.page) || 1;
+  const searchParams = useSearchParams(); // <-- Get search parameters
+  const page = parseInt(searchParams.get("page") || "1"); // <-- Get the 'page' parameter
 
   const handlePagination = (page) => {
     router.push(`/products?page=${page}`);
