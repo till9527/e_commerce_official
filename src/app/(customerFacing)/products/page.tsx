@@ -16,7 +16,7 @@ import { useRouter, useSearchParams } from "next/navigation"; // <-- Updated imp
 
 const ITEMS_PER_PAGE = 6;
 
-const getProducts = cache((page) => {
+const getProducts = cache((page: number) => { // Ensure the 'page' type is number
   const offset = (page - 1) * ITEMS_PER_PAGE;
   return db.product.findMany({
     where: { isAvailableForPurchase: true },
@@ -28,10 +28,10 @@ const getProducts = cache((page) => {
 
 export default function ProductsPage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // <-- Get search parameters
-  const page = parseInt(searchParams.get("page") || "1"); // <-- Get the 'page' parameter
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1");
 
-  const handlePagination = (page) => {
+  const handlePagination = (page: number) => { // Explicitly typing 'page' as number
     router.push(`/products?page=${page}`);
   };
 
@@ -75,7 +75,7 @@ export default function ProductsPage() {
   );
 }
 
-async function ProductsSuspense({ page }) {
+async function ProductsSuspense({ page }: { page: number }) { // Ensure 'page' is typed
   const products = await getProducts(page);
 
   return products.map((product) => <ProductCard key={product.id} {...product} />);
