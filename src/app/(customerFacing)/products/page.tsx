@@ -26,10 +26,10 @@ export default async function ProductsPage({
       {products.map((product) => (
         <ProductCard key={product.id} {...product} />
       ))}
-      <div className="flex justify-center mt-8 mb-4">
+    </div>
+    <div className="flex justify-center mt-8 mb-4">
       <PaginationControls currentPage={page} />
       </div>
-    </div>
   );
 }
 
