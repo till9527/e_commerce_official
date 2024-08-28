@@ -5,7 +5,7 @@ import { Pagination, PaginationItem, PaginationLink, PaginationNext, PaginationP
 
 const ITEMS_PER_PAGE = 6;
 
-const PaginationControls = ({totalItems}) => {
+const PaginationControls = ({totalItems:number}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || "1");
