@@ -16,7 +16,7 @@ import { useRouter, useSearchParams } from "next/navigation"; // <-- Updated imp
 
 const ITEMS_PER_PAGE = 6;
 
-const getProducts = cache((page: number) => { // Ensure the 'page' type is number
+const getProducts = (page: number) => { // Removed cache wrapper
   const offset = (page - 1) * ITEMS_PER_PAGE;
   return db.product.findMany({
     where: { isAvailableForPurchase: true },
@@ -24,7 +24,8 @@ const getProducts = cache((page: number) => { // Ensure the 'page' type is numbe
     take: ITEMS_PER_PAGE,
     skip: offset,
   });
-}, ["/products", "getProducts"]);
+};
+
 
 export default function ProductsPage() {
   const router = useRouter();
