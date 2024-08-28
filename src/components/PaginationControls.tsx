@@ -22,6 +22,7 @@ export default function PaginationControls({ currentPage }: { currentPage: numbe
   };
 
   return (
+  <div className="flex justify-center mt-8 mb-4"> 
     <Pagination>
       <PaginationContent>
         <PaginationItem>
@@ -44,5 +45,6 @@ export default function PaginationControls({ currentPage }: { currentPage: numbe
         </PaginationItem>
       </PaginationContent>
     </Pagination>
+    </div>
   );
 }
