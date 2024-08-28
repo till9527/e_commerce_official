@@ -28,23 +28,17 @@ const PaginationControls = () => {
           </PaginationPrevious>
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink
-            href="#"
-            onClick={() => handlePagination(1)}
-            className={`pagination-button ${currentPage === 1 ? "text-blue-500" : ""}`}
-          >
             1
-          </PaginationLink>
         </PaginationItem>
         {/* Add logic for additional pages if necessary */}
         <PaginationItem>
-          <PaginationLink
+          <PaginationNext
             href="#"
             onClick={() => handlePagination(currentPage + 1)}
             className={`pagination-button ${false ? "cursor-not-allowed opacity-50" : ""}`}
           >
             Next
-          </PaginationLink>
+          </PaginationNext>
         </PaginationItem>
       </Pagination>
     </div>
