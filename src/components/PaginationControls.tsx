@@ -4,8 +4,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Pagination, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"; // Adjust the import as needed
 
 const ITEMS_PER_PAGE = 6;
-
-const PaginationControls = ({totalItems:number}) => {
+interface PaginationControlsProps {
+  totalItems: number;
+}
+const PaginationControls: React.FC<PaginationControlsProps> = ({totalItems}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || "1");
