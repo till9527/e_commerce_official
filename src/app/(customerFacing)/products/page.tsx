@@ -29,7 +29,7 @@ export default async function ProductsPage({
         ))}
       </div>
       <div className="flex justify-center mt-8 mb-4">
-        <PaginationControls/>
+        <PaginationControls totalItems={products.count}/>
       </div>
     </div>
   );
