@@ -14,12 +14,19 @@ export default async function ProductsPage({
   const page = parseInt(searchParams.page || "1");
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
-  const products = await db.product.findMany({
-    where: { isAvailableForPurchase: true },
-    orderBy: { name: "asc" },
-    take: ITEMS_PER_PAGE,
-    skip: offset,
-  });
+  const [products, totalCount] = await Promise.all([
+    db.product.findMany({
+      where: { isAvailableForPurchase: true },
+      orderBy: { name: "asc" },
+      take: ITEMS_PER_PAGE,
+      skip: offset,
+    }),
+    db.product.count({
+      where: { isAvailableForPurchase: true },
+    })
+  ]);
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -27,7 +34,7 @@ export default async function ProductsPage({
         <ProductCard key={product.id} {...product} />
       ))}
 
-      <PaginationControls currentPage={page} />
+      <PaginationControls currentPage={page} totalPages={totalPages} />
     </div>
   );
 }
