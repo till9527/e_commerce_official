@@ -31,7 +31,7 @@ export default function ProductsPage() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
 
-  const handlePagination = (page: number) => { // Explicitly typing 'page' as number
+  const handlePagination = (page: number) => {
     router.push(`/products?page=${page}`);
   };
 
@@ -57,8 +57,8 @@ export default function ProductsPage() {
           <PaginationItem>
             <PaginationPrevious
               href="#"
-              onClick={() => handlePagination(page > 1 ? page - 1 : 1)}
-              disabled={page === 1}
+              onClick={page > 1 ? () => handlePagination(page - 1) : undefined} // Conditional onClick
+              className={page === 1 ? "cursor-not-allowed opacity-50" : ""} // Disabled styling
             />
           </PaginationItem>
           <PaginationItem>
