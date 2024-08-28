@@ -1,7 +1,6 @@
-// server-side only
+// Import necessary components
 import { ProductCard } from "@/components/ProductCard";
 import db from "@/db/db";
-import { GetServerSideProps } from "next";
 import {
   Pagination,
   PaginationContent,
@@ -13,8 +12,13 @@ import {
 
 const ITEMS_PER_PAGE = 6; // Number of items per page
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const page = parseInt(context.query.page as string) || 1;
+// Fetch data in a server component
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  const page = parseInt(searchParams.page || "1");
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
   const products = await db.product.findMany({
@@ -24,15 +28,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     skip: offset,
   });
 
-  return {
-    props: {
-      products,
-      page,
-    },
-  };
-};
-
-export default function ProductsPage({ products, page }: { products: any[]; page: number }) {
   const handlePagination = (page: number) => {
     window.location.href = `/products?page=${page}`;
   };
@@ -65,4 +60,3 @@ export default function ProductsPage({ products, page }: { products: any[]; page
     </div>
   );
 }
-
