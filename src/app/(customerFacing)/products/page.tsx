@@ -1,8 +1,7 @@
-"use client";
-
-import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
+// server-side only
+import { ProductCard } from "@/components/ProductCard";
 import db from "@/db/db";
-import { Suspense } from "react";
+import { GetServerSideProps } from "next";
 import {
   Pagination,
   PaginationContent,
@@ -11,46 +10,38 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useRouter, useSearchParams } from "next/navigation";
 
 const ITEMS_PER_PAGE = 6; // Number of items per page
 
-// Define the getProducts function here
-async function getProducts(page: number) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const page = parseInt(context.query.page as string) || 1;
   const offset = (page - 1) * ITEMS_PER_PAGE;
-  return await db.product.findMany({
+
+  const products = await db.product.findMany({
     where: { isAvailableForPurchase: true },
     orderBy: { name: "asc" },
     take: ITEMS_PER_PAGE,
     skip: offset,
   });
-}
 
-export default function ProductsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const page = parseInt(searchParams.get("page") || "1");
+  return {
+    props: {
+      products,
+      page,
+    },
+  };
+};
 
+export default function ProductsPage({ products, page }: { products: any[]; page: number }) {
   const handlePagination = (page: number) => {
-    router.push(`/products?page=${page}`);
+    window.location.href = `/products?page=${page}`;
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <Suspense
-        fallback={
-          <>
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-          </>
-        }
-      >
-        <ProductsSuspense page={page} />
-      </Suspense>
+      {products.map((product) => (
+        <ProductCard key={product.id} {...product} />
+      ))}
 
       <Pagination>
         <PaginationContent>
@@ -75,8 +66,3 @@ export default function ProductsPage() {
   );
 }
 
-async function ProductsSuspense({ page }: { page: number }) {
-  const products = await getProducts(page); // Fetch products for the current page
-
-  return products.map((product) => <ProductCard key={product.id} {...product} />);
-}
