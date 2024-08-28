@@ -1,3 +1,4 @@
+"use client"
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
