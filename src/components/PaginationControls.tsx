@@ -27,15 +27,7 @@ const PaginationControls = () => {
             Previous
           </PaginationPrevious>
         </PaginationItem>
-        <PaginationItem>
-          <PaginationLink
-            href="#"
-            onClick={() => handlePagination(1)}
-            className={currentPage === 1 ? "text-blue-500" : ""}
-          >
-            {currentPage}
-          </PaginationLink>
-        </PaginationItem>
+        <span className="pagination-page">{currentPage}</span>
         {/* Add logic for additional pages if necessary */}
         <PaginationItem>
           <PaginationLink
