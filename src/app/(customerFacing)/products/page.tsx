@@ -2,7 +2,6 @@
 
 import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import db from "@/db/db";
-import { cache } from "@/lib/cache";
 import { Suspense } from "react";
 import {
   Pagination,
@@ -12,20 +11,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useRouter, useSearchParams } from "next/navigation"; // <-- Updated imports
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ITEMS_PER_PAGE = 6;
-
-const getProducts = (page: number) => { // Removed cache wrapper
-  const offset = (page - 1) * ITEMS_PER_PAGE;
-  return db.product.findMany({
-    where: { isAvailableForPurchase: true },
-    orderBy: { name: "asc" },
-    take: ITEMS_PER_PAGE,
-    skip: offset,
-  });
-};
-
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -58,8 +46,8 @@ export default function ProductsPage() {
           <PaginationItem>
             <PaginationPrevious
               href="#"
-              onClick={page > 1 ? () => handlePagination(page - 1) : undefined} // Conditional onClick
-              className={page === 1 ? "cursor-not-allowed opacity-50" : ""} // Disabled styling
+              onClick={page > 1 ? () => handlePagination(page - 1) : undefined}
+              className={page === 1 ? "cursor-not-allowed opacity-50" : ""}
             />
           </PaginationItem>
           <PaginationItem>
@@ -76,8 +64,8 @@ export default function ProductsPage() {
   );
 }
 
-async function ProductsSuspense({ page }: { page: number }) { // Ensure 'page' is typed
-  const products = await getProducts(page);
+async function ProductsSuspense({ page }: { page: number }) {
+  const products = await getProducts(page); // Directly fetch products
 
   return products.map((product) => <ProductCard key={product.id} {...product} />);
 }
