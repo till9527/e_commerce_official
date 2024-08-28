@@ -20,6 +20,9 @@ export default async function ProductsPage({
     take: ITEMS_PER_PAGE,
     skip: offset,
   });
+  const totalCount = await db.product.count({
+    where: { isAvailableForPurchase: true },
+  });
 
   return (
     <div>
@@ -29,7 +32,7 @@ export default async function ProductsPage({
         ))}
       </div>
       <div className="flex justify-center mt-8 mb-4">
-        <PaginationControls totalItems={products.count}/>
+        <PaginationControls totalItems={totalCount}/>
       </div>
     </div>
   );
