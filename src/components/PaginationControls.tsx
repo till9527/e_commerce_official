@@ -28,9 +28,7 @@ const PaginationControls = () => {
           </PaginationPrevious>
         </PaginationItem>
         <PaginationItem>
-            <PaginationLink href="#" onClick={() => handlePagination(1)}>
-              1
-            </PaginationLink>
+            {currentPage}
           </PaginationItem>
         {/* Add logic for additional pages if necessary */}
         <PaginationItem>
