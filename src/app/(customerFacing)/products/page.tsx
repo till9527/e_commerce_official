@@ -11,7 +11,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";  // <-- Updated import
 
 const ITEMS_PER_PAGE = 6;
 
