@@ -57,7 +57,7 @@ export default function MyOrdersPage() {
           <CardTitle>My Orders</CardTitle>
           <CardDescription>
             Enter your email, and we will send you an OTP to verify your identity.
-            After verifying, we'll email you your order history and download links.
+            After verifying, we&apos;ll email you your order history and download links.
           </CardDescription>
         </CardHeader>
         <CardContent>
