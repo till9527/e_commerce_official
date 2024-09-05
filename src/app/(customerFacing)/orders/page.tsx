@@ -24,6 +24,7 @@ export default function MyOrdersPage() {
   const [message, setMessage] = useState<string | null>(null); // Status messages
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
 
 const handleSendOTP = async () => {
   try {
@@ -44,6 +45,14 @@ const handleSendOTP = async () => {
     }
   } catch (err) {
     setError("Failed to send OTP. Please try again.");
+  }
+};
+
+  const handleClickVerifyOTP = () => {
+  if (otp) {
+    handleVerifyOTP(otp);
+  } else {
+    setError("OTP is required to verify.");
   }
 };
 
@@ -141,7 +150,7 @@ const handleVerifyOTP = async (otp: string) => {
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
         />
-        <Button onClick={handleVerifyOTP}>Verify OTP</Button>
+        <Button onClick={handleClickVerifyOTP}>Verify OTP</Button>
         <Button onClick={() => setIsModalOpen(false)}>Close</Button>
         {error && <div className="text-destructive">{error}</div>}
         {message && <div className="text-success">{message}</div>}
