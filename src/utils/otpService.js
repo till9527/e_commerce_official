@@ -19,7 +19,7 @@ function generateOTP() {
 }
 
 // Send OTP to user's email
-async function sendOTP(email) {
+export async function sendOTP(email) {
   const otp = generateOTP();
 
   // Store OTP with expiration time (5 minutes in this case)
@@ -44,7 +44,7 @@ async function sendOTP(email) {
 }
 
 // Verify OTP
-function verifyOTP(email, otpInput) {
+export function verifyOTP(email, otpInput) {
   const otpData = otpStore.get(email);
 
   if (!otpData) {
@@ -68,7 +68,3 @@ function verifyOTP(email, otpInput) {
   }
 }
 
-module.exports = {
-  sendOTP,
-  verifyOTP,
-};
