@@ -23,72 +23,54 @@ export default function MyOrdersPage() {
   const [message, setMessage] = useState<string | null>(null); // Status messages
   const [error, setError] = useState<string | null>(null);
 
-  
-
-const handleSendOTP = async () => {
-  try {
-    await sendOTP(email); // Function to send OTP
-    
-    setOtpSent(true); // Move to OTP input step
-    setError(null);
-    setMessage("OTP sent to your email. Please enter it to proceed.");
-    
-    // Prompt the user to enter the OTP
-    const otpInput = window.prompt("Please enter the OTP sent to your email:");
-
-    if (otpInput) {
-      setOtp(otpInput);
-      handleVerifyOTP(otpInput); // Call verify function with entered OTP
-    } else {
-      setError("No OTP entered.");
-    }
-  } catch (err) {
-    setError("Failed to send OTP. Please try again.");
-  }
-};
-
-  const handleClickVerifyOTP = () => {
-  if (otp) {
-    handleVerifyOTP(otp);
-  } else {
-    setError("OTP is required to verify.");
-  }
-};
-
-const handleVerifyOTP = async (otp: string) => {
-  try {
-    const isValid = await verifyOTP(email, otp); // Function to verify OTP
-    if (isValid) {
-      setVerified(true); // Proceed to email order history
-      setMessage("OTP verified. Fetching your order history...");
+  const handleSendOTP = async () => {
+    try {
+      await sendOTP(email); // Function to send OTP
+      setOtpSent(true); // Move to OTP input step
       setError(null);
-
-      // Create a FormData object with the email
-      const formData = new FormData();
-      formData.append("email", email);
-
-      // Create a mock prevState (could be empty or a default value)
-      const prevState = {};
-
-      // Call emailOrderHistory with the required arguments
-      const result = await emailOrderHistory(prevState, formData);
-
-      if (result.error) {
-        setError(result.error);
-      } else if (result.message) {
-        setMessage(result.message);
-      }
-    } else {
-      setError("Invalid OTP. Please try again.");
+      setMessage("OTP sent to your email. Please enter it to proceed.");
+    } catch (err) {
+      setError("Failed to send OTP. Please try again.");
     }
-  } catch (err) {
-    setError("Failed to verify OTP. Please try again.");
-  }
-};
+  };
 
+  const handleClickVerifyOTP = async () => {
+    if (!otp) {
+      setError("OTP is required to verify.");
+      return;
+    }
+
+    try {
+      const isValid = await verifyOTP(email, otp); // Function to verify OTP
+      if (isValid) {
+        setVerified(true); // Proceed to email order history
+        setMessage("OTP verified. Fetching your order history...");
+        setError(null);
+
+        // Create a FormData object with the email
+        const formData = new FormData();
+        formData.append("email", email);
+
+        // Create a mock prevState (could be empty or a default value)
+        const prevState = {};
+
+        // Call emailOrderHistory with the required arguments
+        const result = await emailOrderHistory(prevState, formData);
+
+        if (result.error) {
+          setError(result.error);
+        } else if (result.message) {
+          setMessage(result.message);
+        }
+      } else {
+        setError("Invalid OTP. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to verify OTP. Please try again.");
+    }
+  };
 
   return (
-    <>
     <form className="max-2-xl mx-auto">
       <Card>
         <CardHeader>
@@ -110,6 +92,7 @@ const handleVerifyOTP = async (otp: string) => {
               onChange={(e) => setEmail(e.target.value)}
               disabled={otpSent}
             />
+
             {otpSent && (
               <>
                 <Label htmlFor="otp">Enter OTP</Label>
@@ -121,19 +104,24 @@ const handleVerifyOTP = async (otp: string) => {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                 />
+                <Button className="w-full mt-2" onClick={handleClickVerifyOTP}>
+                  Verify OTP
+                </Button>
               </>
             )}
+
             {error && <div className="text-destructive">{error}</div>}
             {message && <div className="text-success">{message}</div>}
           </div>
         </CardContent>
-        <CardFooter>
+        {!otpSent && (
+          <CardFooter>
             <Button className="w-full" size="lg" onClick={handleSendOTP}>
               Send OTP
             </Button>
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
     </form>
-    </>
   );
 }
