@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { emailOrderHistory } from "@/actions/orders";
@@ -16,12 +16,12 @@ import { Label } from "@/components/ui/label";
 import { sendOTP, verifyOTP } from "@/utils/otpService"; // Assume these are helper functions for OTP handling.
 
 export default function MyOrdersPage() {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false); // Step control
-  const [verified, setVerified] = useState(false); // OTP verification status
-  const [message, setMessage] = useState(null); // Status messages
-  const [error, setError] = useState(null);
+  const [email, setEmail] = useState<string>("");
+  const [otp, setOtp] = useState<string>("");
+  const [otpSent, setOtpSent] = useState<boolean>(false); // Step control
+  const [verified, setVerified] = useState<boolean>(false); // OTP verification status
+  const [message, setMessage] = useState<string | null>(null); // Status messages
+  const [error, setError] = useState<string | null>(null);
 
   const handleSendOTP = async () => {
     try {
