@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { userOrderExists } from "@/app/actions/orders"
-import { Button } from "@/components/ui/button"
+import { userOrderExists } from "@/app/actions/orders";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,33 +9,34 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { formatCurrency } from "@/lib/formatters"
+} from "@/components/ui/card";
+import { formatCurrency } from "@/lib/formatters";
 import {
   Elements,
   LinkAuthenticationElement,
   PaymentElement,
   useElements,
   useStripe,
-} from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js"
-import Image from "next/image"
-import { FormEvent, useState } from "react"
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import Image from "next/image";
+import { FormEvent, useState } from "react";
+import { sendOTP, verifyOTP } from "@/utils/otpService"; // Assuming these helper functions are available.
 
 type CheckoutFormProps = {
   product: {
-    id: string
-    imagePath: string
-    name: string
-    priceInCents: number
-    description: string
-  }
-  clientSecret: string
-}
+    id: string;
+    imagePath: string;
+    name: string;
+    priceInCents: number;
+    description: string;
+  };
+  clientSecret: string;
+};
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string
-)
+);
 
 export function CheckoutForm({ product, clientSecret }: CheckoutFormProps) {
   return (
@@ -63,37 +64,73 @@ export function CheckoutForm({ product, clientSecret }: CheckoutFormProps) {
         <Form priceInCents={product.priceInCents} productId={product.id} />
       </Elements>
     </div>
-  )
+  );
 }
 
 function Form({
   priceInCents,
   productId,
 }: {
-  priceInCents: number
-  productId: string
+  priceInCents: number;
+  productId: string;
 }) {
-  const stripe = useStripe()
-  const elements = useElements()
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
-  const [email, setEmail] = useState<string>()
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [otp, setOtp] = useState<string>(""); // OTP state
+  const [otpSent, setOtpSent] = useState<boolean>(false); // OTP sent status
+  const [verified, setVerified] = useState<boolean>(false); // OTP verification status
+  const [message, setMessage] = useState<string | null>(null); // Message state
+
+  const handleSendOTP = async () => {
+    if (!email) {
+      setErrorMessage("Please enter a valid email.");
+      return;
+    }
+    try {
+      await sendOTP(email);
+      setOtpSent(true);
+      setMessage("OTP sent to your email. Please verify to proceed.");
+    } catch (err) {
+      setErrorMessage("Failed to send OTP. Please try again.");
+    }
+  };
+
+  const handleVerifyOTP = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const isValid = await verifyOTP(email as string, otp);
+      if (isValid) {
+        setVerified(true);
+        setMessage("OTP verified. You can now proceed with the payment.");
+      } else {
+        setErrorMessage("Invalid OTP. Please try again.");
+      }
+    } catch (err) {
+      setErrorMessage("Failed to verify OTP. Please try again.");
+    }
+  };
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (stripe == null || elements == null || email == null) return
+    if (stripe == null || elements == null || !verified) {
+      setErrorMessage("Please verify OTP before proceeding.");
+      return;
+    }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
-    const orderExists = await userOrderExists(email, productId)
+    const orderExists = await userOrderExists(email as string, productId);
 
     if (orderExists) {
       setErrorMessage(
-        "You have already purchased this product. Try downloading it from the My Orders page"
-      )
-      setIsLoading(false)
-      return
+        "You have already purchased this product. Try downloading it from the My Orders page."
+      );
+      setIsLoading(false);
+      return;
     }
 
     stripe
@@ -104,13 +141,13 @@ function Form({
         },
       })
       .then(({ error }) => {
-        if (error.type === "card_error" || error.type === "validation_error") {
-          setErrorMessage(error.message)
+        if (error?.type === "card_error" || error?.type === "validation_error") {
+          setErrorMessage(error.message);
         } else {
-          setErrorMessage("An unknown error occurred")
+          setErrorMessage("An unknown error occurred");
         }
       })
-      .finally(() => setIsLoading(false))
+      .finally(() => setIsLoading(false));
   }
 
   return (
@@ -125,25 +162,45 @@ function Form({
           )}
         </CardHeader>
         <CardContent>
-          <PaymentElement />
           <div className="mt-4">
             <LinkAuthenticationElement
-              onChange={e => setEmail(e.value.email)}
+              onChange={(e) => setEmail(e.value.email)}
             />
+            {!otpSent && (
+              <Button className="w-full mt-2" onClick={handleSendOTP}>
+                Send OTP
+              </Button>
+            )}
+            {otpSent && !verified && (
+              <>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  className="w-full mt-2"
+                />
+                <Button className="w-full mt-2" onClick={handleVerifyOTP}>
+                  Verify OTP
+                </Button>
+              </>
+            )}
+            {message && <div className="text-success mt-2">{message}</div>}
           </div>
+          {verified && <PaymentElement />}
         </CardContent>
         <CardFooter>
           <Button
             className="w-full"
             size="lg"
-            disabled={stripe == null || elements == null || isLoading}
+            disabled={stripe == null || elements == null || isLoading || !verified}
           >
             {isLoading
-              ? "Purchasing..."
+              ? "Processing..."
               : `Purchase - ${formatCurrency(priceInCents / 100)}`}
           </Button>
         </CardFooter>
       </Card>
     </form>
-  )
+  );
 }
