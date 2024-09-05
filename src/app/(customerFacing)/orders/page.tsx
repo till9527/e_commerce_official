@@ -41,7 +41,22 @@ export default function MyOrdersPage() {
         setVerified(true); // Proceed to email order history
         setMessage("OTP verified. Fetching your order history...");
         setError(null);
-        emailOrderHistory(email); // Call emailOrderHistory after verification
+        
+        // Create a FormData object with the email
+        const formData = new FormData();
+        formData.append("email", email);
+        
+        // Create a mock prevState (could be empty or a default value)
+        const prevState = {};
+
+        // Call emailOrderHistory with the required arguments
+        const result = await emailOrderHistory(prevState, formData);
+
+        if (result.error) {
+          setError(result.error);
+        } else if (result.message) {
+          setMessage(result.message);
+        }
       } else {
         setError("Invalid OTP. Please try again.");
       }
@@ -106,3 +121,4 @@ export default function MyOrdersPage() {
     </form>
   );
 }
+
