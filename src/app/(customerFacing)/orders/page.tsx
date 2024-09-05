@@ -81,6 +81,7 @@ const handleVerifyOTP = async (otp: string) => {
 
 
   return (
+    <>
     <form className="max-2-xl mx-auto">
       <Card>
         <CardHeader>
@@ -145,6 +146,7 @@ const handleVerifyOTP = async (otp: string) => {
         {error && <div className="text-destructive">{error}</div>}
         {message && <div className="text-success">{message}</div>}
       </Modal>
+    </>
   );
 }
 
