@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Modal from "react-modal";
 import { emailOrderHistory } from "@/actions/orders";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,126 +14,127 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { sendOTP, verifyOTP } from "@/utils/otpService"; // Assume these are helper functions for OTP handling.
+import { sendOTP, verifyOTP } from "@/utils/otpService";
+
+// Ensure to bind the modal to your app element for accessibility reasons
+Modal.setAppElement("#__next");
 
 export default function MyOrdersPage() {
   const [email, setEmail] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
-  const [otpSent, setOtpSent] = useState<boolean>(false); // Step control
-  const [verified, setVerified] = useState<boolean>(false); // OTP verification status
-  const [message, setMessage] = useState<string | null>(null); // Status messages
+  const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [verified, setVerified] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-  
-
-const handleSendOTP = async () => {
-  try {
-    await sendOTP(email); // Function to send OTP
-    setOtpSent(true); // Move to OTP input step
-    setError(null);
-    setMessage("OTP sent to your email. Please enter it to proceed.");
-    
-    // Prompt the user to enter the OTP
-    const otpInput = window.prompt("Please enter the OTP sent to your email:");
-
-    if (otpInput) {
-      setOtp(otpInput);
-      handleVerifyOTP(otpInput); // Call verify function with entered OTP
-    } else {
-      setError("No OTP entered.");
-    }
-  } catch (err) {
-    setError("Failed to send OTP. Please try again.");
-  }
-};
-
-  const handleClickVerifyOTP = () => {
-  if (otp) {
-    handleVerifyOTP(otp);
-  } else {
-    setError("OTP is required to verify.");
-  }
-};
-
-const handleVerifyOTP = async (otp: string) => {
-  try {
-    const isValid = await verifyOTP(email, otp); // Function to verify OTP
-    if (isValid) {
-      setVerified(true); // Proceed to email order history
-      setMessage("OTP verified. Fetching your order history...");
+  const handleSendOTP = async () => {
+    try {
+      await sendOTP(email);
+      setOtpSent(true);
       setError(null);
+      setMessage("OTP sent to your email. Please enter it to proceed.");
 
-      // Create a FormData object with the email
-      const formData = new FormData();
-      formData.append("email", email);
-
-      // Create a mock prevState (could be empty or a default value)
-      const prevState = {};
-
-      // Call emailOrderHistory with the required arguments
-      const result = await emailOrderHistory(prevState, formData);
-
-      if (result.error) {
-        setError(result.error);
-      } else if (result.message) {
-        setMessage(result.message);
-      }
-    } else {
-      setError("Invalid OTP. Please try again.");
+      // Open the modal to prompt the user for OTP
+      setModalIsOpen(true);
+    } catch (err) {
+      setError("Failed to send OTP. Please try again.");
     }
-  } catch (err) {
-    setError("Failed to verify OTP. Please try again.");
-  }
-};
+  };
 
+  const handleVerifyOTP = async (otp: string) => {
+    try {
+      const isValid = await verifyOTP(email, otp);
+      if (isValid) {
+        setVerified(true);
+        setMessage("OTP verified. Fetching your order history...");
+        setError(null);
+
+        const formData = new FormData();
+        formData.append("email", email);
+
+        const prevState = {};
+        const result = await emailOrderHistory(prevState, formData);
+
+        if (result.error) {
+          setError(result.error);
+        } else if (result.message) {
+          setMessage(result.message);
+        }
+      } else {
+        setError("Invalid OTP. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to verify OTP. Please try again.");
+    }
+  };
+
+  const handleModalSubmit = () => {
+    if (otp) {
+      handleVerifyOTP(otp);
+      setModalIsOpen(false); // Close the modal after verification
+    } else {
+      setError("OTP is required to verify.");
+    }
+  };
 
   return (
     <>
-    <form className="max-2-xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle>My Orders</CardTitle>
-          <CardDescription>
-            Enter your email, and we will send you an OTP to verify your identity.
-            After verifying, we&apos;ll email you your order history and download links.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              type="email"
-              required
-              name="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={otpSent}
-            />
-            {otpSent && (
-              <>
-                <Label htmlFor="otp">Enter OTP</Label>
-                <Input
-                  type="text"
-                  required
-                  name="otp"
-                  id="otp"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-              </>
-            )}
-            {error && <div className="text-destructive">{error}</div>}
-            {message && <div className="text-success">{message}</div>}
-          </div>
-        </CardContent>
-        <CardFooter>
+      <form className="max-2-xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>My Orders</CardTitle>
+            <CardDescription>
+              Enter your email, and we will send you an OTP to verify your identity.
+              After verifying, we&apos;ll email you your order history and download links.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                required
+                name="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={otpSent}
+              />
+              {error && <div className="text-destructive">{error}</div>}
+              {message && <div className="text-success">{message}</div>}
+            </div>
+          </CardContent>
+          <CardFooter>
             <Button className="w-full" size="lg" onClick={handleSendOTP}>
               Send OTP
             </Button>
-        </CardFooter>
-      </Card>
-    </form>
+          </CardFooter>
+        </Card>
+      </form>
+
+      {/* Modal for OTP input */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        contentLabel="OTP Verification"
+        className="modal"
+        overlayClassName="overlay"
+      >
+        <h2>Enter OTP</h2>
+        <Input
+          type="text"
+          required
+          name="otp"
+          id="otp"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+        />
+        <Button onClick={handleModalSubmit}>Verify OTP</Button>
+        <Button onClick={() => setModalIsOpen(false)}>Cancel</Button>
+        {error && <div className="text-destructive">{error}</div>}
+        {message && <div className="text-success">{message}</div>}
+      </Modal>
     </>
   );
 }
