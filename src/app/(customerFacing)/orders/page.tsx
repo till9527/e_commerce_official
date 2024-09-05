@@ -23,7 +23,9 @@ export default function MyOrdersPage() {
   const [message, setMessage] = useState<string | null>(null); // Status messages
   const [error, setError] = useState<string | null>(null);
 
-  const handleSendOTP = async () => {
+  const handleSendOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Prevent the form from causing a page refresh
+
     try {
       await sendOTP(email); // Function to send OTP
       setOtpSent(true); // Move to OTP input step
@@ -34,7 +36,9 @@ export default function MyOrdersPage() {
     }
   };
 
-  const handleClickVerifyOTP = async () => {
+  const handleClickVerifyOTP = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
     if (!otp) {
       setError("OTP is required to verify.");
       return;
