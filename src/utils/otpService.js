@@ -1,3 +1,4 @@
+"use server"
 const nodemailer = require('nodemailer');
 
 // In-memory store for OTPs (replace with a database for production use)
