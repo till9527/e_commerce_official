@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Modal from "react-modal";
 import { emailOrderHistory } from "@/actions/orders";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,11 @@ import { Label } from "@/components/ui/label";
 import { sendOTP, verifyOTP } from "@/utils/otpService";
 
 // Ensure to bind the modal to your app element for accessibility reasons
-Modal.setAppElement("#__next");
 
 export default function MyOrdersPage() {
+  useEffect(() => {
+    Modal.setAppElement("#__next");
+  }, []);
   const [email, setEmail] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
