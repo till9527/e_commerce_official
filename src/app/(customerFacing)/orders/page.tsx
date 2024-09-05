@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { emailOrderHistory } from "@/actions/orders";
 import { Button } from "@/components/ui/button";
-import Modal from "react-modal"; // Import your modal library
 import {
   Card,
   CardContent,
@@ -23,13 +22,12 @@ export default function MyOrdersPage() {
   const [verified, setVerified] = useState<boolean>(false); // OTP verification status
   const [message, setMessage] = useState<string | null>(null); // Status messages
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   
 
 const handleSendOTP = async () => {
   try {
     await sendOTP(email); // Function to send OTP
-    setIsModalOpen(true);
     setOtpSent(true); // Move to OTP input step
     setError(null);
     setMessage("OTP sent to your email. Please enter it to proceed.");
@@ -61,7 +59,6 @@ const handleVerifyOTP = async (otp: string) => {
     const isValid = await verifyOTP(email, otp); // Function to verify OTP
     if (isValid) {
       setVerified(true); // Proceed to email order history
-      setIsModalOpen(false);
       setMessage("OTP verified. Fetching your order history...");
       setError(null);
 
@@ -136,25 +133,6 @@ const handleVerifyOTP = async (otp: string) => {
         </CardFooter>
       </Card>
     </form>
-    <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        contentLabel="OTP Verification"
-      >
-        <h2>Verify OTP</h2>
-        <Input
-          type="text"
-          required
-          name="otp"
-          id="otp"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-        />
-        <Button onClick={handleClickVerifyOTP}>Verify OTP</Button>
-        <Button onClick={() => setIsModalOpen(false)}>Close</Button>
-        {error && <div className="text-destructive">{error}</div>}
-        {message && <div className="text-success">{message}</div>}
-      </Modal>
     </>
   );
 }
