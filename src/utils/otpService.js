@@ -44,7 +44,7 @@ export async function sendOTP(email) {
 }
 
 // Verify OTP
-export function verifyOTP(email, otpInput) {
+export async function verifyOTP(email, otpInput) {
   const otpData = otpStore.get(email);
 
   if (!otpData) {
