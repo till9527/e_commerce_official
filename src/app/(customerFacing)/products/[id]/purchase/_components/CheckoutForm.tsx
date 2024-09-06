@@ -165,9 +165,7 @@ function Form({
     </CardHeader>
     <CardContent>
       <div className="mt-4">
-        {/* Only show the email field if the user is not verified */}
-        {!verified && (
-          <>
+
             <LinkAuthenticationElement
               onChange={(e) => setEmail(e.value.email)}
             />
@@ -176,8 +174,7 @@ function Form({
                 Send OTP
               </Button>
             )}
-          </>
-        )}
+
         {/* Show the OTP input if OTP was sent and not yet verified */}
         {otpSent && !verified && (
           <>
