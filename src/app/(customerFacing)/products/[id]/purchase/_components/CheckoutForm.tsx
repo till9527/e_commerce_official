@@ -178,7 +178,7 @@ function Form({
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   placeholder="Enter OTP"
-                  className="w-full mt-2"
+                  className="p-Input-input Input p-LinkInput w-full mt-2"
                 />
                 <Button className="w-full mt-2" onClick={handleVerifyOTP}>
                   Verify OTP
