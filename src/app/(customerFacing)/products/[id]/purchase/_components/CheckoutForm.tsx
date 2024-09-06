@@ -19,6 +19,8 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { sendOTP, verifyOTP } from "@/utils/otpService"; // Assuming these helper functions are available.
