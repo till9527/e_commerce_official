@@ -153,18 +153,21 @@ function Form({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Checkout</CardTitle>
-          {errorMessage && (
-            <CardDescription className="text-destructive">
-              {errorMessage}
-            </CardDescription>
-          )}
-        </CardHeader>
-        <CardContent>
-          <div className="mt-4">
+  <form onSubmit={handleSubmit}>
+  <Card>
+    <CardHeader>
+      <CardTitle>Checkout</CardTitle>
+      {errorMessage && (
+        <CardDescription className="text-destructive">
+          {errorMessage}
+        </CardDescription>
+      )}
+    </CardHeader>
+    <CardContent>
+      <div className="mt-4">
+        {/* Only show the email field if the user is not verified */}
+        {!verified && (
+          <>
             <LinkAuthenticationElement
               onChange={(e) => setEmail(e.value.email)}
             />
@@ -173,38 +176,43 @@ function Form({
                 Send OTP
               </Button>
             )}
-            {otpSent && !verified && (
-             <>
-                <Label htmlFor="otp">Enter OTP</Label>
-                <Input
-                  type="text"
-                  required
-                  name="otp"
-                  id="otp"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-                <Button className="w-full mt-2" onClick={handleVerifyOTP}>
-                  Verify OTP
-                </Button>
-              </>
-            )}
-            {message && <div className="text-success mt-2">{message}</div>}
-          </div>
-          {verified && <PaymentElement />}
-        </CardContent>
-        <CardFooter>
-          <Button
-            className="w-full"
-            size="lg"
-            disabled={stripe == null || elements == null || isLoading || !verified}
-          >
-            {isLoading
-              ? "Processing..."
-              : `Purchase - ${formatCurrency(priceInCents / 100)}`}
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+          </>
+        )}
+        {/* Show the OTP input if OTP was sent and not yet verified */}
+        {otpSent && !verified && (
+          <>
+            <Label htmlFor="otp">Enter OTP</Label>
+            <Input
+              type="text"
+              required
+              name="otp"
+              id="otp"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <Button className="w-full mt-2" onClick={handleVerifyOTP}>
+              Verify OTP
+            </Button>
+          </>
+        )}
+        {message && <div className="text-success mt-2">{message}</div>}
+      </div>
+      {/* Show the PaymentElement only when the email is verified */}
+      {verified && <PaymentElement />}
+    </CardContent>
+    <CardFooter>
+      <Button
+        className="w-full"
+        size="lg"
+        disabled={stripe == null || elements == null || isLoading || !verified}
+      >
+        {isLoading
+          ? "Processing..."
+          : `Purchase - ${formatCurrency(priceInCents / 100)}`}
+      </Button>
+    </CardFooter>
+  </Card>
+</form>
+
   );
 }
