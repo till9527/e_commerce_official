@@ -102,7 +102,7 @@ function Form({
     }
   };
   
-const handleChange = (e) => {
+const handleChange = (e: LinkAuthenticationElementChangeEvent) => {
     if (!otpSent) {
       setEmail(emailToSet); // Use the email stored when OTP was sent
     }
