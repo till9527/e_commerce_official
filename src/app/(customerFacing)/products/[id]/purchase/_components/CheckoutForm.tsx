@@ -167,11 +167,11 @@ function Form({
     </CardHeader>
     <CardContent>
       <div className="mt-4">
-
-            <LinkAuthenticationElement
-              onChange={(e) => setEmail(e.value.email)}
-              style={{ display: otpSent ? 'none' : 'block' }}
-            />
+       <div className={otpSent ? 'hidden' : ''}>
+        <LinkAuthenticationElement
+          onChange={handleChange}
+        />
+      </div>
             {!otpSent && (
               <Button className="w-full mt-2" onClick={handleSendOTP}>
                 Send OTP
