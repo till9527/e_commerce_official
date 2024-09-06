@@ -167,7 +167,7 @@ function Form({
       <div className="mt-4">
 
             <LinkAuthenticationElement
-              onChange={(e) => setEmail(e.value.email)}
+              onChange={(e) => setEmail(e.value.email)} disabled = {otpSent}
             />
             {!otpSent && (
               <Button className="w-full mt-2" onClick={handleSendOTP}>
