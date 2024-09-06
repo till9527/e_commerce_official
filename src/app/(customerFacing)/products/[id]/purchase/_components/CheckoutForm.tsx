@@ -166,7 +166,7 @@ function Form({
     <CardContent>
       <div className="mt-4">
         {/* Only show the email field if the user is not verified */}
-        {!verified && !otpSent &&(
+        {!verified && (
           <>
             <LinkAuthenticationElement
               onChange={(e) => setEmail(e.value.email)}
