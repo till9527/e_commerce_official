@@ -173,12 +173,14 @@ function Form({
             )}
             {otpSent && !verified && (
              <>
-                <input
+                <Label htmlFor="otp">Enter OTP</Label>
+                <Input
                   type="text"
+                  required
+                  name="otp"
+                  id="otp"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  placeholder="Enter OTP"
-                  className="w-full mt-2"
                 />
                 <Button className="w-full mt-2" onClick={handleVerifyOTP}>
                   Verify OTP
