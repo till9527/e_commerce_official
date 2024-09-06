@@ -81,7 +81,6 @@ function Form({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const [emailToSet, setEmailToSet] = useState<string>();
   const [otp, setOtp] = useState<string>(""); // OTP state
   const [otpSent, setOtpSent] = useState<boolean>(false); // OTP sent status
   const [verified, setVerified] = useState<boolean>(false); // OTP verification status
@@ -94,7 +93,6 @@ function Form({
     }
     try {
       await sendOTP(email);
-      setEmailToSet(email);
       setOtpSent(true);
       setMessage("OTP sent to your email. Please verify to proceed.");
     } catch (err) {
@@ -102,11 +100,7 @@ function Form({
     }
   };
   
-const handleChange = (e: LinkAuthenticationElementChangeEvent) => {
-    if (!otpSent) {
-      setEmail(emailToSet); // Use the email stored when OTP was sent
-    }
-  };
+
 
   const handleVerifyOTP = async (e: FormEvent) => {
     e.preventDefault();
@@ -175,7 +169,8 @@ const handleChange = (e: LinkAuthenticationElementChangeEvent) => {
       <div className="mt-4">
 
             <LinkAuthenticationElement
-              onChange={handleChange}
+              onChange={(e) => setEmail(e.value.email)}
+              style={{ display: otpSent ? 'none' : 'block' }}
             />
             {!otpSent && (
               <Button className="w-full mt-2" onClick={handleSendOTP}>
