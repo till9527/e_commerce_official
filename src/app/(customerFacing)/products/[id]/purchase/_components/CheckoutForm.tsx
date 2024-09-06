@@ -173,7 +173,7 @@ function Form({
             )}
             {otpSent && !verified && (
               <>
-                <LinkAuthenticationElement onChange={(e) => setOtp(e.target.value)} />
+                <LinkAuthenticationElement onChange={(e) => setOtp(e.value)} />
                 <Button className="w-full mt-2" onClick={handleVerifyOTP}>
                   Verify OTP
                 </Button>
