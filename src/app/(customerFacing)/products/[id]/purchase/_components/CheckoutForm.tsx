@@ -169,7 +169,7 @@ function Form({
       <div className="mt-4">
        <div className={otpSent ? 'hidden' : ''}>
         <LinkAuthenticationElement
-          onChange={handleChange}
+          onChange={(e) => setEmail(e.value.email)}
         />
       </div>
             {!otpSent && (
