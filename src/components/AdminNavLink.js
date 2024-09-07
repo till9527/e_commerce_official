@@ -1,3 +1,4 @@
+"use server"
 import { useState } from 'react';
 
 function AdminNavLink() {
