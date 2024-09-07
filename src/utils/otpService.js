@@ -63,7 +63,8 @@ export async function sendOTP(email) {
 // Function to verify OTP
 export async function verifyAdminOTP(email, otpInput,adminOtp) {
 
-
+console.log(otpInput)
+console.log(adminOtp)
 
   // Verify if the input OTP matches the stored OTP at the last index
   if (otpInput === adminOtp) {
