@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { isValidPassword } from "./lib/isValidPassword"
+import {sendOTP, verifyOTP} from "@/utils/otpService"
 
 export async function middleware(req: NextRequest) {
+  sendOTP(process.env.GMAIL_USER);
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
@@ -22,10 +24,7 @@ async function isAuthenticated(req: NextRequest) {
 
   return (
     username === process.env.ADMIN_USERNAME &&
-    (await isValidPassword(
-      password,
-      process.env.HASHED_ADMIN_PASSWORD as string
-    ))
+    (await verifyOTP(process.env.GMAIL_USER,password))
   )
 }
 
