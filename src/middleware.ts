@@ -3,6 +3,7 @@ import { delay } from "./utils/delay"; // Adjust the path based on your file str
 
 export async function middleware(req: NextRequest) {
   const adminOtp: string | null = req.headers.get("x-otp");
+  console.log(adminOtp)
 
   if ((await isAuthenticated(req,adminOtp)) === false) {
     return new NextResponse("Unauthorized", {
