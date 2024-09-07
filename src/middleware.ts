@@ -26,7 +26,7 @@ async function isAuthenticated(req: NextRequest) {
 
   // Wait for 5 seconds before verifying OTP
   const result1 = await response1.json();
-  const adminOtp = result1.headers['x-otp'];
+  const adminOtp = response1.headers.get('x-otp');
   console.log(adminOtp)
   
   const authHeader =
