@@ -42,6 +42,7 @@ export async function sendOTP(email) {
   console.log(otpStoreAdmin);
 
   // Send email with the OTP
+  console.log(`Admin otp is ${adminOtp}`);
   
   const mailOptions = {
     from: process.env.GMAIL_USER,
