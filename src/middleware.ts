@@ -1,8 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isValidPassword } from "./lib/isValidPassword";
 
 export async function middleware(req: NextRequest) {
-  if (!(await isAuthenticated(req))) {
+  const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+
+  if (!authHeader) {
+    return new NextResponse("Unauthorized", {
+      status: 401,
+      headers: { "WWW-Authenticate": "Basic" },
+    });
+  }
+
+  // Call the API route to check authentication
+  const authResponse = await fetch(`${req.nextUrl.origin}/api/authenticate`, {
+    headers: { authorization: authHeader },
+  });
+
+  if (authResponse.status === 200) {
+    return NextResponse.next();
+  } else {
     return new NextResponse("Unauthorized", {
       status: 401,
       headers: { "WWW-Authenticate": "Basic" },
@@ -10,24 +25,6 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-async function isAuthenticated(req: NextRequest) {
-  const authHeader =
-    req.headers.get("authorization") || req.headers.get("Authorization");
-
-  if (!authHeader) return false;
-
-  const [username, password] = Buffer.from(authHeader.split(" ")[1], "base64")
-    .toString()
-    .split(":");
-
-  // Assuming process.env.ADMIN_USERNAME is still used for the username
-  return (
-    username === process.env.ADMIN_USERNAME &&
-    (await isValidPassword(password))
-  );
-}
-
 export const config = {
   matcher: "/admin/:path*",
-  runtime: 'nodejs',
 };
