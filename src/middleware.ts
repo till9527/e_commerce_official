@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const email = process.env.GMAIL_USER;
-  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sendOtp`, {
+  await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ async function isAuthenticated(req: NextRequest) {
     .toString()
     .split(":");
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/verifyOtp`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/verifyOtp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
