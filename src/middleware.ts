@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { delay } from "./utils/delay"; // Adjust the path based on your file structure
 
 export async function middleware(req: NextRequest) {
- const adminOtp: string | null = req.headers.get("x-otp");
- console.log(`Received OTP in header: ${adminOtp}`);
+
 
   if ((await isAuthenticated(req,adminOtp)) === false) {
     return new NextResponse("Unauthorized", {
@@ -13,17 +12,20 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-async function isAuthenticated(req: NextRequest,adminOtp: string | null) {
+async function isAuthenticated(req: NextRequest) {
   const email = process.env.GMAIL_USER;
   
   // Send OTP
-  await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
+  const response1 = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email }),
   });
+ const result1 = await response1.json();
+ const adminOtp = response1.headers.get('x-otp');
+ console.log(`Got admin otp as ${adminOtp}`);
 
   // Wait for 5 seconds before verifying OTP
  
