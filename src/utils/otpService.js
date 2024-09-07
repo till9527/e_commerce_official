@@ -54,16 +54,11 @@ export async function sendOTP(email) {
   try {
     await transporter.sendMail(mailOptions);
     console.log(`OTP sent to ${email}`);
-    return new NextResponse(JSON.stringify({ success: true, message: 'OTP sent successfully' }), {
-      status: 200,
-      headers: { 'x-otp': adminOtp.toString() },
-    });
+    return adminOtp;
     
   } catch (error) {
     console.error('Error sending OTP:', error);
-    return new NextResponse(JSON.stringify({ success: false, message: 'Failed to send OTP' }), {
-      status: 500,
-    });
+
   }
 }
 
