@@ -1,5 +1,6 @@
 // isValidPassword.js
-import { adminOTP } from "./otpGeneration";
+const { adminOTP } = require("./otpGeneration");
+
 
 export async function isValidPassword(password: string) {
   return password === adminOTP;
