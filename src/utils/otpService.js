@@ -63,7 +63,7 @@ export async function verifyAdminOTP(email, otpInput) {
     throw new Error('No OTP found for this email');
   }
 
-  const latestOTP = otpStoreAdmin[otpStoreAdmin.length - 1]; // Get the most recent OTP
+  const latestOTP = otpStoreAdmin[0]; // Get the most recent OTP
 
   // Verify if the input OTP matches the stored OTP at the last index
   if (otpInput === latestOTP) {
