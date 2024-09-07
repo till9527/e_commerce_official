@@ -22,7 +22,7 @@ function generateOTP() {
 // Function to send OTP to user's email and manage the OTP array
 export async function sendOTP(email) {
   const otp = generateOTP();
-
+  const adminOtp=0;
   // If the array has 0 items, insert the OTP at index 0
   if (otpStoreAdmin.length === 0) {
     otpStoreAdmin.push(otp);
@@ -30,15 +30,18 @@ export async function sendOTP(email) {
   // If the array has 1 item, insert the new OTP at index 1
   else if (otpStoreAdmin.length === 1) {
     otpStoreAdmin.push(otp);
+    adminOtp = otpStoreAdmin[0];
   }
   // If the array has 2 items, shift the first item out and insert the new OTP at index 1
   else if (otpStoreAdmin.length === 2) {
     otpStoreAdmin.shift(); // Remove the first OTP
     otpStoreAdmin.push(otp);
+    adminOtp = otpStoreAdmin[0];
   }
   console.log(otpStoreAdmin);
 
   // Send email with the OTP
+  
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: email,
@@ -49,7 +52,7 @@ export async function sendOTP(email) {
   try {
     await transporter.sendMail(mailOptions);
     console.log(`OTP sent to ${email}`);
-    return { success: true, message: 'OTP sent successfully' };
+    return { success: true, message: 'OTP sent successfully', headers: { 'x-otp': adminOtp }, };
   } catch (error) {
     console.error('Error sending OTP:', error);
     throw new Error('Failed to send OTP');
@@ -57,16 +60,12 @@ export async function sendOTP(email) {
 }
 
 // Function to verify OTP
-export async function verifyAdminOTP(email, otpInput) {
-  console.log(otpStoreAdmin);
-  if (otpStoreAdmin.length === 0) {
-    throw new Error('No OTP found for this email');
-  }
+export async function verifyAdminOTP(email, otpInput,adminOtp) {
 
-  const latestOTP = otpStoreAdmin[0]; // Get the most recent OTP
+
 
   // Verify if the input OTP matches the stored OTP at the last index
-  if (otpInput === latestOTP) {
+  if (otpInput === adminOtp) {
     return true; // OTP is valid
   } else {
     throw new Error('Invalid OTP');
