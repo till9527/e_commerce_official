@@ -1,33 +1,45 @@
-import { NextRequest, NextResponse } from "next/server"
-import { isValidPassword } from "./lib/isValidPassword"
-import {sendOTP, verifyOTP} from "@/utils/otpService"
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  sendOTP(process.env.GMAIL_USER);
+  const email = process.env.GMAIL_USER;
+  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sendOtp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
       headers: { "WWW-Authenticate": "Basic" },
-    })
+    });
   }
 }
 
 async function isAuthenticated(req: NextRequest) {
   const authHeader =
-    req.headers.get("authorization") || req.headers.get("Authorization")
+    req.headers.get("authorization") || req.headers.get("Authorization");
 
-  if (authHeader == null) return false
+  if (authHeader == null) return false;
 
   const [username, password] = Buffer.from(authHeader.split(" ")[1], "base64")
     .toString()
-    .split(":")
+    .split(":");
 
-  return (
-    username === process.env.ADMIN_USERNAME &&
-    (await verifyOTP(process.env.GMAIL_USER,password))
-  )
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/verifyOtp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email: process.env.GMAIL_USER, otpInput: password }),
+  });
+
+  const result = await response.json();
+  return result.success;
 }
 
 export const config = {
   matcher: "/admin/:path*",
-}
+};
