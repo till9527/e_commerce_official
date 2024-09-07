@@ -36,6 +36,7 @@ export async function sendOTP(email) {
     otpStoreAdmin.shift(); // Remove the first OTP
     otpStoreAdmin.push(otp);
   }
+  console.log(otpStoreAdmin);
 
   // Send email with the OTP
   const mailOptions = {
