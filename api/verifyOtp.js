@@ -1,4 +1,4 @@
-import { verifyOTP } from "@/utils/otpService";
+import { verifyOTP } from "@/src/utils/otpService";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
