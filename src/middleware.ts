@@ -33,7 +33,6 @@ async function isAuthenticated(req: NextRequest) {
   const [username, password] = Buffer.from(authHeader.split(" ")[1], "base64")
     .toString()
     .split(":");
-  await delay(10000);
   const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/verifyOtp`, {
     method: 'POST',
     headers: {
