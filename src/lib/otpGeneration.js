@@ -1,5 +1,5 @@
 "use server"
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 // In-memory store for admin OTP
 export let adminOTP = null;
