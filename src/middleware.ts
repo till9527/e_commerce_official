@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { delay } from "./utils/delay"; // Adjust the path based on your file structure
+
+
+const authCache = new Map(); // Simple cache to store timestamps
 
 export async function middleware(req: NextRequest) {
+  const email = process.env.GMAIL_USER;
+  const cacheKey = `auth_${email}`;
 
+  if (authCache.has(cacheKey)) {
+    const lastAuthTime = authCache.get(cacheKey);
+    const now = Date.now();
+    const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+    if (now - lastAuthTime < fiveMinutes) {
+      // Within the 5-minute window, skip authentication
+      return NextResponse.next();
+    }
+  }
 
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
@@ -10,11 +24,15 @@ export async function middleware(req: NextRequest) {
       headers: { "WWW-Authenticate": "Basic" },
     });
   }
+
+  // Update the cache with the current time after successful authentication
+  authCache.set(cacheKey, Date.now());
+  return NextResponse.next();
 }
 
 async function isAuthenticated(req: NextRequest) {
   const email = process.env.GMAIL_USER;
-  
+
   // Send OTP
   const response1 = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
     method: 'POST',
@@ -23,26 +41,26 @@ async function isAuthenticated(req: NextRequest) {
     },
     body: JSON.stringify({ email }),
   });
- const result1 = await response1.json();
- const adminOtp = response1.headers.get('x-otp');
- console.log(`Got admin otp as ${adminOtp}`);
 
-  // Wait for 5 seconds before verifying OTP
- 
-  const authHeader =
-    req.headers.get("authorization") || req.headers.get("Authorization");
+  const result1 = await response1.json();
+  const adminOtp = response1.headers.get('x-otp');
+  console.log(`Got admin otp as ${adminOtp}`);
+
+
+  const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
 
   if (authHeader == null) return false;
 
   const [username, password] = Buffer.from(authHeader.split(" ")[1], "base64")
     .toString()
     .split(":");
+
   const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/verifyOtp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email: email, otpInput: password, adminOtp:adminOtp }),
+    body: JSON.stringify({ email: email, otpInput: password, adminOtp: adminOtp }),
   });
 
   const result = await response.json();
@@ -52,3 +70,4 @@ async function isAuthenticated(req: NextRequest) {
 export const config = {
   matcher: "/admin/:path*",
 };
+
