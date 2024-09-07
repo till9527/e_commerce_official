@@ -22,21 +22,19 @@ function generateOTP() {
 // Function to send OTP to user's email and manage the OTP array
 export async function sendOTP(email) {
   const otp = generateOTP();
-  const zero = 0;
-  otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
 
   // If the array has 0 items, insert the OTP at index 0
   if (otpStoreAdmin.length === 0) {
-    otpStoreAdmin.push({zero});
-  } 
+    otpStoreAdmin.push(otp);
+  }
   // If the array has 1 item, insert the new OTP at index 1
   else if (otpStoreAdmin.length === 1) {
-    otpStoreAdmin.push({ otp});
-  } 
+    otpStoreAdmin.push(otp);
+  }
   // If the array has 2 items, shift the first item out and insert the new OTP at index 1
   else if (otpStoreAdmin.length === 2) {
     otpStoreAdmin.shift(); // Remove the first OTP
-    otpStoreAdmin.push({ otp});
+    otpStoreAdmin.push(otp);
   }
 
   // Send email with the OTP
@@ -59,17 +57,14 @@ export async function sendOTP(email) {
 
 // Function to verify OTP
 export async function verifyAdminOTP(email, otpInput) {
-
   if (otpStoreAdmin.length === 0) {
     throw new Error('No OTP found for this email');
   }
 
-  const { otp} = otpStoreAdmin[0]; // The first index should have the most recent OTP
+  const latestOTP = otpStoreAdmin[otpStoreAdmin.length - 1]; // Get the most recent OTP
 
-
-
-  // Verify if the input OTP matches the stored OTP at index 0
-  if (otpInput === otp) {
+  // Verify if the input OTP matches the stored OTP at the last index
+  if (otpInput === latestOTP) {
     return true; // OTP is valid
   } else {
     throw new Error('Invalid OTP');
