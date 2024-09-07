@@ -5,7 +5,7 @@ export async function middleware(req: NextRequest) {
  const adminOtp: string | null = req.headers.get("x-otp");
  console.log(`Received OTP in header: ${adminOtp}`);
 
-  if ((await isAuthenticated(req)) === false) {
+  if ((await isAuthenticated(req,adminOtp)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
       headers: { "WWW-Authenticate": "Basic" },
