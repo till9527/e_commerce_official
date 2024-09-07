@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  const email = process.env.GMAIL_USER;
-  await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email }),
-  });
-
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
