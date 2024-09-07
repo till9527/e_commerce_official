@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { delay } from "./utils/delay"; // Adjust the path based on your file structure
 
 export async function middleware(req: NextRequest) {
-  const adminOtp = req.headers.get("x-otp");
+  const adminOtp: string | null = req.headers.get("x-otp");
 
   if ((await isAuthenticated(req,adminOtp)) === false) {
     return new NextResponse("Unauthorized", {
@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-async function isAuthenticated(req: NextRequest,adminOtp) {
+async function isAuthenticated(req: NextRequest,adminOtp: string | null) {
   const email = process.env.GMAIL_USER;
   
   // Send OTP
