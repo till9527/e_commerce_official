@@ -1,5 +1,4 @@
 import { Nav, NavLink } from "@/components/Nav"
-import{AdminNavLink} from "@/components/AdminNavLink"
 
 export const dynamic = "force-dynamic"
 
