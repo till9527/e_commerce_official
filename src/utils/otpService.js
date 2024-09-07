@@ -22,10 +22,11 @@ function generateOTP() {
 // Function to send OTP to user's email and manage the OTP array
 export async function sendOTP(email) {
   const otp = generateOTP();
-  const adminOtp=0;
+  let adminOtp;
   // If the array has 0 items, insert the OTP at index 0
   if (otpStoreAdmin.length === 0) {
     otpStoreAdmin.push(otp);
+    adminOtp=0;
   }
   // If the array has 1 item, insert the new OTP at index 1
   else if (otpStoreAdmin.length === 1) {
