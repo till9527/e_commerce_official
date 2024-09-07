@@ -1,8 +1,9 @@
-"use server"
+"use server";
 const nodemailer = require('nodemailer');
 
-// In-memory store for OTPs (replace with a database for production use)
+// In-memory store for OTPs (using an array)
 const otpStore = new Map(); 
+let otpStoreAdmin = [];
 
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
@@ -18,18 +19,31 @@ function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
 }
 
-// Send OTP to user's email
+// Function to send OTP to user's email and manage the OTP array
 export async function sendOTP(email) {
   const otp = generateOTP();
-
-  // Store OTP with expiration time (5 minutes in this case)
+  const zero = 0;
   otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
+
+  // If the array has 0 items, insert the OTP at index 0
+  if (otpStoreAdmin.length === 0) {
+    otpStoreAdmin.push({zero});
+  } 
+  // If the array has 1 item, insert the new OTP at index 1
+  else if (otpStoreAdmin.length === 1) {
+    otpStoreAdmin.push({ otp});
+  } 
+  // If the array has 2 items, shift the first item out and insert the new OTP at index 1
+  else if (otpStoreAdmin.length === 2) {
+    otpStoreAdmin.shift(); // Remove the first OTP
+    otpStoreAdmin.push({ otp});
+  }
 
   // Send email with the OTP
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: email,
-    subject: 'Your OTP for Order Verification',
+    subject: 'Your OTP for Admin Verification',
     text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
   };
 
@@ -43,7 +57,26 @@ export async function sendOTP(email) {
   }
 }
 
-// Verify OTP
+// Function to verify OTP
+export async function verifyAdminOTP(email, otpInput) {
+  // Find OTPs stored for the given email
+  otpStoreAdmin;
+
+  if (otpStoreAdmin.length === 0) {
+    throw new Error('No OTP found for this email');
+  }
+
+  const { otp} = otpStoreAdmin[0]; // The first index should have the most recent OTP
+
+
+
+  // Verify if the input OTP matches the stored OTP at index 0
+  if (otpInput === otp) {
+    return true; // OTP is valid
+  } else {
+    throw new Error('Invalid OTP');
+  }
+}
 export async function verifyOTP(email, otpInput) {
   const otpData = otpStore.get(email);
 
