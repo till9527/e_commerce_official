@@ -4,7 +4,7 @@ import { delay } from "./utils/delay"; // Adjust the path based on your file str
 export async function middleware(req: NextRequest) {
 
 
-  if ((await isAuthenticated(req,adminOtp)) === false) {
+  if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
       headers: { "WWW-Authenticate": "Basic" },
