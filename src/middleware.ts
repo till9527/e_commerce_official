@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { delay } from "./utils/delay"; // Adjust the path based on your file structure
 
 export async function middleware(req: NextRequest) {
+  const email = process.env.GMAIL_USER;
+  
+  // Send OTP
+  await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  // Wait for 5 seconds before verifying OTP
+  await delay(5000);
+
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
@@ -30,6 +45,10 @@ async function isAuthenticated(req: NextRequest) {
   const result = await response.json();
   return result.success;
 }
+
+export const config = {
+  matcher: "/admin/:path*",
+};
 
 export const config = {
   matcher: "/admin/:path*",
