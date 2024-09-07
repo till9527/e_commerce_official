@@ -59,8 +59,6 @@ export async function sendOTP(email) {
 
 // Function to verify OTP
 export async function verifyAdminOTP(email, otpInput) {
-  // Find OTPs stored for the given email
-  otpStoreAdmin;
 
   if (otpStoreAdmin.length === 0) {
     throw new Error('No OTP found for this email');
