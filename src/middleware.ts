@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
   });
 
   // Wait for 5 seconds before verifying OTP
-  await delay(5000);
+  await delay(10000);
 
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
