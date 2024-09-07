@@ -1,4 +1,3 @@
-"use server"
 import { Nav, NavLink } from "@/components/Nav"
 import{AdminNavLink} from "@/components/AdminNavLink"
 
@@ -12,7 +11,7 @@ export default function Layout({
   return (
     <>
       <Nav>
-        <AdminNavLink href="/admin" prefetch={false}>Admin Dashboard</AdminNavLink>
+        <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
         <NavLink href="/">Home</NavLink>
         <NavLink href="/products">Products</NavLink>
         <NavLink href="/orders">My Orders</NavLink>
