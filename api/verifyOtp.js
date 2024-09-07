@@ -1,10 +1,10 @@
-import { verifyOTP } from "../src/utils/otpService";
+import { verifyAdminOTP } from "../src/utils/otpService";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { email, otpInput } = req.body;
     try {
-      const isValid = await verifyOTP(email, otpInput);
+      const isValid = await verifyAdminOTP(email, otpInput);
       if (isValid) {
         res.status(200).json({ success: true });
       } else {
