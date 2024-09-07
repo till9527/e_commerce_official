@@ -1,4 +1,5 @@
 import { Nav, NavLink } from "@/components/Nav"
+import{AdminNavLink} from "@/components/AdminNavLink"
 
 export const dynamic = "force-dynamic"
 
@@ -10,7 +11,7 @@ export default function Layout({
   return (
     <>
       <Nav>
-        <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
+        <AdminNavLink href="/admin" prefetch={false}>Admin Dashboard</AdminNavLink>
         <NavLink href="/">Home</NavLink>
         <NavLink href="/products">Products</NavLink>
         <NavLink href="/orders">My Orders</NavLink>
