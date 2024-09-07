@@ -38,7 +38,7 @@ async function isAuthenticated(req: NextRequest) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email: process.env.GMAIL_USER, otpInput: password }),
+    body: JSON.stringify({ email: email, otpInput: password }),
   });
 
   const result = await response.json();
