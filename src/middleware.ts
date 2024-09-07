@@ -16,7 +16,7 @@ async function isAuthenticated(req: NextRequest) {
   const email = process.env.GMAIL_USER;
   
   // Send OTP
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
+  const response1 = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/sendOtp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -25,8 +25,8 @@ async function isAuthenticated(req: NextRequest) {
   });
 
   // Wait for 5 seconds before verifying OTP
-  const result = await response.json();
-  const adminOtp = result.headers['x-otp'];
+  const result1 = await response1.json();
+  const adminOtp = result1.headers['x-otp'];
   console.log(adminOtp)
   
   const authHeader =
