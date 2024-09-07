@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { delay } from "./utils/delay"; // Adjust the path based on your file structure
 
 export async function middleware(req: NextRequest) {
+  const adminOtp = req.headers.get("x-otp");
 
   if ((await isAuthenticated(req)) === false) {
     return new NextResponse("Unauthorized", {
@@ -38,7 +39,7 @@ async function isAuthenticated(req: NextRequest) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email: email, otpInput: password }),
+    body: JSON.stringify({ email: email, otpInput: password, adminOtp:adminOtp }),
   });
 
   const result = await response.json();
