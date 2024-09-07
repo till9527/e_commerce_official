@@ -4,7 +4,7 @@ import { delay } from "./utils/delay"; // Adjust the path based on your file str
 export async function middleware(req: NextRequest) {
   const adminOtp = req.headers.get("x-otp");
 
-  if ((await isAuthenticated(req)) === false) {
+  if ((await isAuthenticated(req,adminOtp)) === false) {
     return new NextResponse("Unauthorized", {
       status: 401,
       headers: { "WWW-Authenticate": "Basic" },
@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-async function isAuthenticated(req: NextRequest) {
+async function isAuthenticated(req: NextRequest,adminOtp) {
   const email = process.env.GMAIL_USER;
   
   // Send OTP
