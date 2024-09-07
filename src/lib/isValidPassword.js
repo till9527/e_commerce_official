@@ -2,6 +2,7 @@
 const { adminOTP } = require("./otpGeneration");
 
 
-export async function isValidPassword(password: string) {
+async function isValidPassword(password: string) {
   return password === adminOTP;
 }
+module.exports = { isValidPassword };
