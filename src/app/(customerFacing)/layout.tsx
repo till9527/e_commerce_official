@@ -1,3 +1,4 @@
+"use server"
 import { Nav, NavLink } from "@/components/Nav"
 import{AdminNavLink} from "@/components/AdminNavLink"
 
