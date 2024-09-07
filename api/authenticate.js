@@ -1,4 +1,4 @@
-import { isValidPassword } from "../../lib/isValidPassword";
+import { isValidPassword } from "../src/lib/isValidPassword";
 
 export default async function handler(req, res) {
   const authHeader =
