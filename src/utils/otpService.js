@@ -22,6 +22,7 @@ function generateOTP() {
 // Function to send OTP to user's email and manage the OTP array
 export async function sendOTP(email) {
   const otp = generateOTP();
+   otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
   
   const mailOptions = {
     from: process.env.GMAIL_USER,
