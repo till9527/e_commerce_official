@@ -23,6 +23,7 @@ async function isAuthenticated(req: NextRequest) {
     body: JSON.stringify({ email }),
   });
  const result1 = await response1.json();
+ console.log(result1);
  const adminOtp = response1.headers.get('x-otp');
  console.log(`Got admin otp as ${adminOtp}`);
 
