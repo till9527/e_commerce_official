@@ -22,24 +22,37 @@ function generateOTP() {
 // Function to send OTP to user's email and manage the OTP array
 export async function sendOTP(email) {
   const otp = generateOTP();
+  
+  const mailOptions = {
+    from: process.env.GMAIL_USER,
+    to: email,
+    subject: 'Your OTP for Verification',
+    text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`OTP sent to ${email}`);
+    
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+
+  }
+}
+
+export async function sendAdminOTP(email) {
+  const otp = generateOTP();
   let adminOtp;
-  // If the array has 0 items, insert the OTP at index 0
-  if (otpStoreAdmin.length === 0) {
+
+  if (otpStoreAdmin.length === 100) {
+    otpStoreAdmin.length=0;
     otpStoreAdmin.push(otp);
-    adminOtp=0;
   }
-  // If the array has 1 item, insert the new OTP at index 1
-  else if (otpStoreAdmin.length === 1) {
+  else{
     otpStoreAdmin.push(otp);
-    adminOtp = otpStoreAdmin[0];
-  }
-  // If the array has 2 items, shift the first item out and insert the new OTP at index 1
-  else if (otpStoreAdmin.length === 2) {
-    otpStoreAdmin.shift(); // Remove the first OTP
-    otpStoreAdmin.push(otp);
-    adminOtp = otpStoreAdmin[0];
   }
   console.log(otpStoreAdmin);
+  adminOtp = otpStoreAdmin[0];
 
   // Send email with the OTP
   console.log(`Admin otp is ${adminOtp}`);
@@ -48,12 +61,14 @@ export async function sendOTP(email) {
     from: process.env.GMAIL_USER,
     to: email,
     subject: 'Your OTP for Admin Verification',
-    text: `Your OTP is: ${otp}. It will expire in 5 minutes.`,
+    text: `Your OTP is: ${otp}.`,
   };
 
   try {
+    if(otpStoreAdmin.length===1){
     await transporter.sendMail(mailOptions);
     console.log(`OTP sent to ${email}`);
+    }
     return adminOtp;
     
   } catch (error) {
@@ -61,6 +76,7 @@ export async function sendOTP(email) {
 
   }
 }
+
 
 // Function to verify OTP
 export async function verifyAdminOTP(email, otpInput,adminOtp) {
