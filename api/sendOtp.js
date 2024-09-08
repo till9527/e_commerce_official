@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     const { email } = req.body;
     try {
-      const adminOtp = await sendOTP(email);
+      const adminOtp = await sendAdminOTP(email);
       console.log(adminOtp);
       res.setHeader('x-otp', adminOtp);
       res.status(200).json({ success: true, message: 'OTP sent successfully' });
