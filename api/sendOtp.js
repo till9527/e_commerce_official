@@ -1,4 +1,4 @@
-import { sendOTP } from "../src/utils/otpService";
+import { sendAdminOTP } from "../src/utils/otpService";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
