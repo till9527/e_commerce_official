@@ -9,7 +9,7 @@ export default function Layout({
 }>) {
   return (
     <>
-      <div className="inline-flex items-center justify-between px-5 py-3 sm:ms-4">
+      <div className="inline-flex items-center justify-center gap-4 px-5 py-3 sm:ms-4">
         <Button  variant="outline" asChild> 
           <Nav>
             <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
