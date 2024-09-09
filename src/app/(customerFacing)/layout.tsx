@@ -16,7 +16,7 @@ export default function Layout({
               <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
             </Nav>
           </Button>
-          <Button variant="outline" asChild> 
+          <Button asChild> 
             <Nav>
               <NavLink href="/">Home</NavLink>
             </Nav>    
