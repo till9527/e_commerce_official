@@ -9,7 +9,12 @@ export default function Layout({
 }>) {
   return (
     <>
-      <Button> My Button </Button>
+      <Button> 
+        <Nav>
+          <NavLink href="/admin" prefetch={false}>Button</NavLink>
+        </Nav>
+        
+      </Button>
       <Nav>
         <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
         <NavLink href="/">Home</NavLink>
