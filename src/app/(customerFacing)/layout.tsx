@@ -9,27 +9,29 @@ export default function Layout({
 }>) {
   return (
     <>
-      <div className="inline-flex items-center justify-center gap-4 px-5 py-3 sm:ms-4">
-        <Button  variant="outline" asChild> 
-          <Nav>
-            <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
-          </Nav>
-        </Button>
-        <Button variant="outline" asChild> 
-          <Nav>
-            <NavLink href="/">Home</NavLink>
-          </Nav>    
-        </Button>
-        <Button variant="outline" asChild> 
-          <Nav>
-            <NavLink href="/products">Products</NavLink>
-          </Nav>    
-        </Button>
-        <Button variant="outline" asChild> 
-          <Nav>
-            <NavLink href="/orders">My Orders</NavLink>
-          </Nav>    
-        </Button>
+      <div className="flex justify-center">
+        <div className="flex gap-4 items-center max-w-3xl w-full justify-between px-4 py-3">
+          <Button variant="outline" asChild> 
+            <Nav>
+              <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
+            </Nav>
+          </Button>
+          <Button variant="outline" asChild> 
+            <Nav>
+              <NavLink href="/">Home</NavLink>
+            </Nav>    
+          </Button>
+          <Button variant="outline" asChild> 
+            <Nav>
+              <NavLink href="/products">Products</NavLink>
+            </Nav>    
+          </Button>
+          <Button variant="outline" asChild> 
+            <Nav>
+              <NavLink href="/orders">My Orders</NavLink>
+            </Nav>    
+          </Button>
+        </div>
       </div>
       <div className="container my-6">{children}</div>
     </>
