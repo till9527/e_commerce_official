@@ -11,9 +11,9 @@ export default function Layout({
     <>
       <div className="inline-flex items-center justify-center gap-4 px-5 py-3 sm:ms-4">
         <Button  variant="outline" asChild> 
-          <Link href="/admin" className="space-x-2" prefetch={false}>
-            <span>Admin Dashboard</span>
-          </Link>
+          <Nav>
+            <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
+          </Nav>
         </Button>
         <Button variant="outline" asChild> 
           <Nav>
