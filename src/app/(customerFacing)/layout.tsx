@@ -12,15 +12,23 @@ export default function Layout({
       <Button> 
         <Nav>
           <NavLink href="/admin" prefetch={false}>Button</NavLink>
-        </Nav>
-        
+        </Nav>    
       </Button>
-      <Nav>
-        <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
-        <NavLink href="/">Home</NavLink>
-        <NavLink href="/products">Products</NavLink>
-        <NavLink href="/orders">My Orders</NavLink>
-      </Nav>
+      <Button> 
+        <Nav>
+          <NavLink href="/">Home</NavLink>
+        </Nav>    
+      </Button>
+      <Button> 
+        <Nav>
+          <NavLink href="/products">Products</NavLink>
+        </Nav>    
+      </Button>
+      <Button> 
+        <Nav>
+          <NavLink href="/orders">My Orders</NavLink>
+        </Nav>    
+      </Button>
       <div className="container my-6">{children}</div>
     </>
   )
