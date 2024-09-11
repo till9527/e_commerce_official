@@ -13,7 +13,7 @@ export default function Layout({
         <img 
           src="https://e-commerce-official-bucket.s3.us-east-2.amazonaws.com/logo/DAFTlogo.png" 
           alt="DAFT Logo" 
-          style={{ height: '50px', marginRight: '15px' }} 
+          style={{ height: '100px', marginRight: '15px' }} 
         />
         <NavLink href="/admin" prefetch={false}>Admin Dashboard</NavLink>
         <NavLink href="/">Home</NavLink>
