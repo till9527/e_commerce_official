@@ -10,6 +10,11 @@ export default function AdminLayout({
   return (
     <>
       <Nav>
+        <img 
+          src="https://e-commerce-official-bucket.s3.us-east-2.amazonaws.com/logo/DAFTlogo.png" 
+          alt="DAFT Logo" 
+          style={{ height: '50px', marginRight: '15px' }} 
+        />
         <NavLink href="/">User Dashboard</NavLink>
         <NavLink href="/admin">Dashboard</NavLink>
         <NavLink href="/admin/products">Products</NavLink>
