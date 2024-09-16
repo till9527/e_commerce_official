@@ -89,6 +89,7 @@ function Form({
   const handleSendOTP = async () => {
     if (!email) {
       setErrorMessage("Please enter a valid email.");
+      window.location.reload();
       return;
     }
     try {
@@ -168,7 +169,7 @@ function Form({
     </CardHeader>
     <CardContent>
       <div className="mt-4">
-       <div className={otpSent && email ? 'hidden' : ''}>
+       <div className={otpSent ? 'hidden' : ''}>
         <LinkAuthenticationElement
           onChange={(e) => setEmail(e.value.email)}
         />
