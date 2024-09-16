@@ -89,7 +89,6 @@ function Form({
   const handleSendOTP = async () => {
     if (!email) {
       setErrorMessage("Please enter a valid email.");
-      window.location.reload();
       return;
     }
     try {
