@@ -168,7 +168,7 @@ function Form({
     </CardHeader>
     <CardContent>
       <div className="mt-4">
-       <div className={otpSent ? 'hidden' : ''}>
+       <div className={otpSent && email ? 'hidden' : ''}>
         <LinkAuthenticationElement
           onChange={(e) => setEmail(e.value.email)}
         />
