@@ -120,7 +120,7 @@ function Form({
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    if (stripe == null || elements == null || !verified) {
+    if (!verified) {
       setErrorMessage("Please verify OTP before proceeding.");
       return;
     }
