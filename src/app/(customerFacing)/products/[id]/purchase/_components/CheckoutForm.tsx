@@ -121,12 +121,6 @@ function Form({
     e.preventDefault();
 
     if (stripe==null||elements==null||!verified) {
-      if(!verified){
-      setErrorMessage("Please verify OTP before proceeding.");
-      }
-      if(verified){
-        setErrorMessage("");
-      }
       return;
     }
 
