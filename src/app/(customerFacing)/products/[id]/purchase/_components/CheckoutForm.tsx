@@ -119,6 +119,7 @@ function Form({
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setErrorMessage("");
 
     if (stripe==null||elements==null||!verified) {
       return;
