@@ -124,6 +124,9 @@ function Form({
       if(!verified){
       setErrorMessage("Please verify OTP before proceeding.");
       }
+      if(verified){
+        setErrorMessage("");
+      }
       return;
     }
 
