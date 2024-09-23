@@ -113,7 +113,7 @@ function Form({
         setErrorMessage("Invalid OTP. Please try again.");
       }
     } catch (err) {
-      setErrorMessage(<span style={{ color: 'black' }}>Failed to verify OTP. Please try again. You can ignore this error if you're seeing the credit card info box.</span>);
+      setErrorMessage(<span style={{ color: 'black' }}>Failed to verify OTP. Please try again. You can ignore this error if you&apos;re seeing the credit card info box.</span>);
     }
   };
 
@@ -122,7 +122,7 @@ function Form({
 
 
     if (stripe==null||elements==null||!verified) {
-      setErrorMessage(<span style={{ color: 'black' }}>Please verify OTP before proceeding. You can ignore this error if you're seeing the credit card info box.</span>);
+      setErrorMessage(<span style={{ color: 'black' }}>Please verify OTP before proceeding. You can ignore this error if you&apos;re seeing the credit card info box.</span>);
       return;
     }
 
