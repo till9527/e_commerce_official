@@ -113,7 +113,7 @@ function Form({
         setErrorMessage("Invalid OTP. Please try again.");
       }
     } catch (err) {
-      setErrorMessage("Failed to verify OTP. Please try again. You can ignore this error if you're seeing the credit card info box.");
+      setMessage("Failed to verify OTP. Please try again. You can ignore this error if you're seeing the credit card info box.");
     }
   };
 
@@ -122,7 +122,7 @@ function Form({
 
 
     if (stripe==null||elements==null||!verified) {
-      setErrorMessage("Please verify OTP before proceeding. You can ignore this error if you're seeing the credit card info box.");
+      setMessage("Please verify OTP before proceeding. You can ignore this error if you're seeing the credit card info box.");
       return;
     }
 
