@@ -29,9 +29,6 @@ const getNewestProducts = cache(() => {
   })
 }, ["/", "getNewestProducts"])
 
-export const metadata = {
-  title: 'DAFT Commerce',  // This will set the title for the page
-}
 export default function HomePage() {
   return (
     <main className="space-y-12">
