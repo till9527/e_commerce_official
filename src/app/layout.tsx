@@ -14,7 +14,6 @@ export const metadata: Metadata = {
       { rel: 'icon', sizes: '16x16', url: '/favicon-16x16.png' },
     ],
     apple: '/apple-touch-icon.png',
-    manifest: '/site.webmanifest',
     other: [
       { rel: 'icon', sizes: '192x192', url: '/android-chrome-192x192.png' },
       { rel: 'icon', sizes: '512x512', url: '/android-chrome-512x512.png' },
