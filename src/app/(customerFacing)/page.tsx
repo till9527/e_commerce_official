@@ -5,6 +5,7 @@ import { cache } from "@/lib/cache"
 import { Product } from "@prisma/client"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import Head from "next/head"
 import { Suspense } from "react"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -31,6 +32,9 @@ const getNewestProducts = cache(() => {
 
 export default function HomePage() {
   return (
+    <Head>
+      <title>DAFT Commerce</title>
+    </Head>
     <main className="space-y-12">
       <ProductGridSection
         title="Most Popular"
